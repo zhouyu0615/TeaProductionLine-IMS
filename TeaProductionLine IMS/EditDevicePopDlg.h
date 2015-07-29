@@ -13,7 +13,7 @@ public:
 
 // 对话框数据
 	enum { IDD = IDD_EDITDEVICE_POPDLG };
-
+	int m_nSelectedItem;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 

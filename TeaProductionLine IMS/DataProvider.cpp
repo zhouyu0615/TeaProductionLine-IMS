@@ -243,7 +243,7 @@ void CDataProvider::AddProLineToDatabase(CProductionLineClass tempProLine)
 
 	if (length == 0)//设置第一条生产线的ID
 	{
-		tempProLine.m_Id = 1000;
+		tempProLine.m_Id = 1;
 	}
 	else{
 		tempProLine.m_Id = m_vectProductionLine[length - 1].m_Id + 1;
@@ -766,7 +766,7 @@ void CDataProvider::ReadDeviceParaFromDatabase()
 		return;
 	}
 
-
+	m_vectDevicePara.clear();
 	CDevicePara tempDevicePara;
 	tbDevicePara.MoveFirst();
 	while (!tbDevicePara.IsEOF()){
@@ -825,6 +825,7 @@ void CDataProvider::ReadFaultParaFromDatabase()
 		return;
 	}
 
+	m_vectFaultPara.clear();
 	CFaultPara tempFaultPara;
 	
 	tbFaultPara.MoveFirst();
@@ -876,8 +877,8 @@ void CDataProvider::ReadProcessParaFromDatabase()
 		return;
 	}
 
+	m_vectProModulePara.clear();
 	CProcessPara tempProcessPara;
-
 	tbProcessPara.MoveFirst();
 	while (!tbProcessPara.IsEOF()){
 
@@ -928,9 +929,8 @@ void CDataProvider::ReadStateParaFromDatabase()
 	{
 		return;
 	}
-
+	m_vectStatePara.clear();
 	CStatePara tempStatePara;
-
 	tbStatePara.MoveFirst();
 	while (!tbStatePara.IsEOF()){
 		tempStatePara.m_Id=tbStatePara.m_Id;
@@ -979,6 +979,9 @@ void CDataProvider::ReadLoginUserFormDatabase()
 		return;
 	}
 
+
+	 m_vectLoginUser.clear();
+
 	CLoginUser tempLoginUser;
 	tbLoginUser.MoveFirst();
 	while (!tbLoginUser.IsEOF()){
@@ -993,6 +996,8 @@ void CDataProvider::ReadLoginUserFormDatabase()
 		tempLoginUser.m_PermissionLevel = tbLoginUser.m_PermissionLevel;
 		tempLoginUser.m_IsRememberPasswd = tbLoginUser.m_IsRememberPasswd;
 		tempLoginUser.m_IsAutoLogin = tbLoginUser.m_IsAutoLogin;
+
+		m_vectLoginUser.push_back(tempLoginUser);
 
 		tbLoginUser.MoveNext();
 	}
@@ -1023,6 +1028,8 @@ void CDataProvider::ReadUserFromDatabase(){
 		return;
 	}
 
+
+	m_vectUser.clear();
 	CUserClass tempUser;
 	tbUser.MoveFirst();
 	while (!tbUser.IsEOF()){
@@ -1066,6 +1073,7 @@ void CDataProvider::ReadProLineFromDatabase(){
 		return;
 	}
 
+	m_vectProductionLine.clear();
 	CProductionLineClass tempProductionLine;
 	tbProductionLine.MoveFirst();
 	while (!tbProductionLine.IsEOF()){
@@ -1109,7 +1117,7 @@ void CDataProvider::ReadProModuleFromDatabase()
 		return;
 	}
 
-
+	m_vectProcessModule.clear();
 	CProcessModuleClass tempModule;
 	tbProcessModule.MoveFirst();
 	while (!tbProcessModule.IsEOF()){
@@ -1154,7 +1162,7 @@ void CDataProvider::ReadDeviceFromDatabase()
 		return;
 	}
 
-
+	m_vectDevice.clear();
 	CDeviceClass tempDevice;
 	tbDevice.MoveFirst();
 	while (!tbDevice.IsEOF()){
@@ -1202,6 +1210,7 @@ void CDataProvider::ReadPlcFromDatabase()
 		return;
 	}
 
+	m_vectPlc.clear();
 	CPlcClass tempPlc;
 	tbPlc.MoveFirst();
 	while (!tbPlc.IsEOF()){
@@ -1250,6 +1259,7 @@ void CDataProvider::ReadVideoFromDatabase()
 		return;
 	}
 
+	m_vectVideo.clear();
 	CVideoClass tempVideo;
 	tbVideo.MoveFirst();
 	while (!tbVideo.IsEOF()){
@@ -1277,44 +1287,56 @@ void CDataProvider::ReadVideoFromDatabase()
 /*函数功能：删除枚举类型dbTable类型中提供的各表的所有列
 举例：DeleteDbTable(tbProductionLine)删除生产线表格所包含的所有的列
 */
+
 int CDataProvider::DeleteDbTable(enumDBTABLE dbTable)
 {
 	CString strsql;
-
+	
 	switch (dbTable)
 	{
 	case CDataProvider::tbUser:
 		strsql.Format(_T("DELETE FROM tbUser"));
+		m_vectUser.clear();
 		break;
 	case CDataProvider::tbProductionLine:
 		strsql.Format(_T("DELETE FROM tbProductionLine"));
+		m_vectProductionLine.clear();
 		break;
 	case CDataProvider::tbProcessModule:
 		strsql.Format(_T("DELETE FROM tbProcessModule"));
+		m_vectProcessModule.clear();
 		break;
 	case CDataProvider::tbDevice:
 		strsql.Format(_T("DELETE FROM tbDevice"));
+		m_vectDevice.clear();
 		break;
 	case CDataProvider::tbPLc:
 		strsql.Format(_T("DELETE FROM tbPLc"));
+		m_vectPlc.clear();
 		break;
 	case CDataProvider::tbVideo:
 		strsql.Format(_T("DELETE FROM tbVideo"));
+		m_vectVideo.clear();
 		break;
 	case CDataProvider::tbLoginUser:
 		strsql.Format(_T("DELETE FROM tbLoginUser"));
+		m_vectLoginUser.clear();
 		break;
 	case CDataProvider::tbDevicePara:
 		strsql.Format(_T("DELETE FROM tbDevicePara"));
+		m_vectDevicePara.clear();
 		break;
 	case CDataProvider::tbFaultPara:
 		strsql.Format(_T("DELETE FROM tbFaultPara"));
+		m_vectFaultPara.clear();
 		break;
 	case CDataProvider::tbProcessPara:
 		strsql.Format(_T("DELETE FROM tbProcessPara"));
+		m_vectProModulePara.clear();
 		break;
 	case CDataProvider::tbStatePara:
 		strsql.Format(_T("DELETE FROM tbStatePara"));
+		m_vectStatePara.clear();
 		break;
 	default:
 		break;

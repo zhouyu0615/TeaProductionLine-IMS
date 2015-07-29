@@ -11,6 +11,7 @@ public:
 	CEditModulePopDlg(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CEditModulePopDlg();
 
+	int m_nSelectedItem;
 // 对话框数据
 	enum { IDD = IDD_EDITMODULE_POPDLG };
 

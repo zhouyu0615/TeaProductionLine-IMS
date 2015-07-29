@@ -1,4 +1,6 @@
 #pragma once
+#include "afxwin.h"
+#include "DataProvider.h"
 
 
 // CEditLinePopDlg 对话框
@@ -18,4 +20,16 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
 	DECLARE_MESSAGE_MAP()
+
+public:
+	int m_nSelectedItem;
+	CEdit m_editLineName;
+	CEdit m_editCapacity;
+	CEdit m_editDescription;
+	afx_msg void OnBnClickedOk();
+	virtual BOOL OnInitDialog();
+
+private:
+	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
+
 };
