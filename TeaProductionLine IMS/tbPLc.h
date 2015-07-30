@@ -2,7 +2,7 @@
 
 #pragma once
 
-// 代码生成在 2015年7月26日 星期日, 11:14
+// 代码生成在 2015年7月29日 星期三, 20:10
 
 class CtbPLc : public CRecordset
 {
@@ -33,6 +33,7 @@ public:
 	long	m_ReadLength;
 	long	m_WriteStartAddr;
 	long	m_WriteLength;
+	long	m_SortIndex;
 
 // 重写
 	// 向导生成的虚函数重写

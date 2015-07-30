@@ -14,5 +14,6 @@ public:
 
 	int m_ProductionLineId;
 	int m_ModuleId;
+	int m_SortIndex;
 };
 

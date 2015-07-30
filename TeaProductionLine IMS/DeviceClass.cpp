@@ -11,6 +11,7 @@ CDeviceClass::CDeviceClass()
 	m_strProcessModuleName = _T("");
 	m_strDeviceType = _T("");
 	//  m_strModuleName = _T("");
+	m_SortIndex = 0;
 }
 
 

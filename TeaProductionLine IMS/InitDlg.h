@@ -87,4 +87,7 @@ public:
 	afx_msg void OnNMRClickLiInitdlg(NMHDR *pNMHDR, LRESULT *pResult);
 
 	int DeleteListItem(int nItem);
+	int ModifyListItem();
+	int MoveUpItem();
+	int MoveDownItem();
 };

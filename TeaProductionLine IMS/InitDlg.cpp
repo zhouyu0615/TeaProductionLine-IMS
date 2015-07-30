@@ -221,7 +221,6 @@ void CInitDlg::OnBnClickedAddInitdlg()
 		tempUser.m_strUserCode = text3;
 		tempUser.m_strNote = text4;
 
-
 		m_pDataProvider->AddUserToDatabase(tempUser);
 
 		break;
@@ -527,8 +526,6 @@ void CInitDlg::MyOnPaint()
 		m_list_init.InsertColumn(3, _T("工艺模块名称"), LVCFMT_CENTER, rect1.Width() / 10 * 3, -1);
 		m_list_init.InsertColumn(4, _T("备注说明"), LVCFMT_CENTER, rect1.Width() / 10 * 3, -1);
 
-
-
 		//填写表单内容//
 		temp = m_pDataProvider->m_vectProcessModule.size();
 		for (int i = 0; i < temp; i++)
@@ -671,7 +668,7 @@ void CInitDlg::MyOnPaint()
 			str.Format(_T("%d"), m_pDataProvider->m_vectPlc[i].m_WriteStartAddr);
 			m_list_init.SetItemText(i, 6, str);
 			str.Format(_T("%d"), m_pDataProvider->m_vectPlc[i].m_WriteLength);
-			m_list_init.SetItemText(i, 6, str);
+			m_list_init.SetItemText(i, 7, str);
 		}
 		break;
 
@@ -682,15 +679,26 @@ void CInitDlg::MyOnPaint()
 
 		m_GroupBox.SetWindowText(_T("添加摄像头"));
 		m_StaticText1.SetWindowText(_T("所属生产线："));
-		m_StaticText2.SetWindowText(_T("摄像头名称："));
-		m_StaticText3.SetWindowText(_T("IP地址："));
-		m_StaticText4.SetWindowText(_T("端口："));
+		m_StaticText2.SetWindowText(_T("所属工艺模块："));
+		m_StaticText3.SetWindowText(_T("摄像头名称："));
+		m_StaticText4.SetWindowText(_T("IP地址："));
+		m_StaticText5.SetWindowText(_T("端口："));
 
-		m_StaticText5.ShowWindow(SW_HIDE);
+
+		m_StaticText1.ShowWindow(SW_SHOW);
+		m_StaticText2.ShowWindow(SW_SHOW);
+		m_StaticText3.ShowWindow(SW_SHOW);
+		m_StaticText4.ShowWindow(SW_SHOW);
+		m_StaticText5.ShowWindow(SW_SHOW);
 		m_StaticText6.ShowWindow(SW_HIDE);
 
 		m_EditText1.ShowWindow(SW_HIDE);
 		m_EditText2.ShowWindow(SW_HIDE);
+		m_EditText3.ShowWindow(SW_SHOW);
+		m_EditText4.ShowWindow(SW_SHOW);
+		m_EditText5.ShowWindow(SW_SHOW);
+		m_EditText6.ShowWindow(SW_HIDE);
+
 
 		m_LineComboBox.ShowWindow(SW_SHOW);
 		m_ModuleComboBox.ShowWindow(SW_SHOW);
@@ -735,7 +743,7 @@ void CInitDlg::MyOnPaint()
 			m_list_init.SetItemText(i, 4, m_pDataProvider->m_vectVideo[i].m_strVideoName);
 			m_list_init.SetItemText(i, 5, m_pDataProvider->m_vectVideo[i].m_strIPAddr);
 
-			strPort.Format(_T("%d"), m_pDataProvider->m_vectVideo);
+			strPort.Format(_T("%d"), m_pDataProvider->m_vectVideo[i].m_port);
 			m_list_init.SetItemText(i, 6, strPort);
 		}
 		break;
@@ -853,57 +861,219 @@ void CInitDlg::OnNMRClickLiInitdlg(NMHDR *pNMHDR, LRESULT *pResult)
 
 	switch (nItem1)
 	{
-	case ID_AA_MODIFY:
-		switch (m_InitTag)
-		{
-		case OWER_EDIT_TAG:
-			m_EditOwerPopDlg.m_nSelectedItem = m_nSelectedItem;
-			m_EditOwerPopDlg.DoModal();
-			break;
-		case PRODUCTION_LINE_EDIT_TAG:
-			m_EditLinePopDlg.m_nSelectedItem = m_nSelectedItem;
-			m_EditLinePopDlg.DoModal();
-			break;
-		case MODULE_EDIT_TAG:
-			m_EditModulePopDlg.m_nSelectedItem = m_nSelectedItem;
-			m_EditModulePopDlg.DoModal();
-			break;
-		case DEVICE_EDIT_TAG:
-			m_EditDevicePopDlg.m_nSelectedItem = m_nSelectedItem;
-			m_EditDevicePopDlg.DoModal();
-			break;
-		case PLC_EDIT_TAG:
-			m_EditPlcPopDlg.m_nSelectedItem = m_nSelectedItem;
-			m_EditPlcPopDlg.DoModal();
-			break;
-		case VIDEO_EDIT_TAG:
-			m_EditVideoPopDlg.m_nSelectedItem = m_nSelectedItem;
-			m_EditVideoPopDlg.DoModal();
-			break;
-		default:
-			break;
-		}
+	case ID_AA_MODIFY:  //右键菜单：修改//
+		ModifyListItem();
 		break;
 	case ID_AA_DELETE:
 		DeleteListItem(m_nSelectedItem);
 		break;
 	case  ID_AA_MOVEUP:
-
+		MoveUpItem();
 		break;
 	case ID_AA_MOVEDOWN:
+		MoveDownItem();
+		break;
+	default:
+		break;
+	}
+	MyOnPaint();
+}
 
+
+int CInitDlg::ModifyListItem()
+{
+	switch (m_InitTag)
+	{
+	case OWER_EDIT_TAG:
+		m_EditOwerPopDlg.m_nSelectedItem = m_nSelectedItem;
+		m_EditOwerPopDlg.DoModal();
+		break;
+	case PRODUCTION_LINE_EDIT_TAG:
+		m_EditLinePopDlg.m_nSelectedItem = m_nSelectedItem;
+		m_EditLinePopDlg.DoModal();
+		break;
+	case MODULE_EDIT_TAG:
+		m_EditModulePopDlg.m_nSelectedItem = m_nSelectedItem;
+		m_EditModulePopDlg.DoModal();
+		break;
+	case DEVICE_EDIT_TAG:
+		m_EditDevicePopDlg.m_nSelectedItem = m_nSelectedItem;
+		m_EditDevicePopDlg.DoModal();
+		break;
+	case PLC_EDIT_TAG:
+		m_EditPlcPopDlg.m_nSelectedItem = m_nSelectedItem;
+		m_EditPlcPopDlg.DoModal();
+		break;
+	case VIDEO_EDIT_TAG:
+		m_EditVideoPopDlg.m_nSelectedItem = m_nSelectedItem;
+		m_EditVideoPopDlg.DoModal();
 		break;
 	default:
 		break;
 	}
 
-	MyOnPaint();
+	return 0;
+}
+
+int CInitDlg::MoveUpItem()
+{
+	switch (m_InitTag)
+	{
+	case OWER_EDIT_TAG:
+
+		break;
+	case PRODUCTION_LINE_EDIT_TAG:
+		if (m_nSelectedItem >= 1)
+		{
+			//与容器中的上一个元素进行交换//
+			std::swap(m_pDataProvider->m_vectProductionLine[m_nSelectedItem - 1], m_pDataProvider->m_vectProductionLine[m_nSelectedItem]);
+			//把生产线的SortIndex交换//
+			std::swap(m_pDataProvider->m_vectProductionLine[m_nSelectedItem - 1].m_SortIndex, m_pDataProvider->m_vectProductionLine[m_nSelectedItem].m_SortIndex);
+
+			//把改动存入数据库//
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbProductionLine, m_pDataProvider->m_vectProductionLine[m_nSelectedItem - 1].m_Id);
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbProductionLine, m_pDataProvider->m_vectProductionLine[m_nSelectedItem].m_Id);
+		}
+		break;
+	case MODULE_EDIT_TAG:
+		if (m_nSelectedItem >= 1)
+		{
+			//与容器中的上一个元素进行交换//
+			std::swap(m_pDataProvider->m_vectProcessModule[m_nSelectedItem - 1], m_pDataProvider->m_vectProcessModule[m_nSelectedItem]);
+			//把SortIndex交换//
+			std::swap(m_pDataProvider->m_vectProcessModule[m_nSelectedItem - 1].m_SortIndex, m_pDataProvider->m_vectProcessModule[m_nSelectedItem].m_SortIndex);
+
+			//把改动存入数据库//
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbProcessModule, m_pDataProvider->m_vectProcessModule[m_nSelectedItem - 1].m_Id);
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbProcessModule, m_pDataProvider->m_vectProcessModule[m_nSelectedItem].m_Id);
+		}
+		break;
+	case DEVICE_EDIT_TAG:
+		if (m_nSelectedItem >= 1)
+		{
+			//与容器中的上一个元素进行交换//
+			std::swap(m_pDataProvider->m_vectDevice[m_nSelectedItem - 1], m_pDataProvider->m_vectDevice[m_nSelectedItem]);
+			//把SortIndex交换//
+			std::swap(m_pDataProvider->m_vectDevice[m_nSelectedItem - 1].m_SortIndex, m_pDataProvider->m_vectDevice[m_nSelectedItem].m_SortIndex);
+
+			//把改动存入数据库//
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbDevice, m_pDataProvider->m_vectDevice[m_nSelectedItem - 1].m_Id);
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbDevice, m_pDataProvider->m_vectDevice[m_nSelectedItem].m_Id);
+		}
+		break;
+	case PLC_EDIT_TAG:
+		if (m_nSelectedItem >= 1)
+		{
+			//与容器中的上一个元素进行交换//
+			std::swap(m_pDataProvider->m_vectPlc[m_nSelectedItem - 1], m_pDataProvider->m_vectPlc[m_nSelectedItem]);
+			//把SortIndex交换//
+			std::swap(m_pDataProvider->m_vectPlc[m_nSelectedItem - 1].m_SortIndex, m_pDataProvider->m_vectPlc[m_nSelectedItem].m_SortIndex);
+
+			//把改动存入数据库//
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbPLc, m_pDataProvider->m_vectPlc[m_nSelectedItem - 1].m_Id);
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbPLc, m_pDataProvider->m_vectPlc[m_nSelectedItem].m_Id);
+		}
+		break;
+	case VIDEO_EDIT_TAG:
+		if (m_nSelectedItem >= 1)
+		{
+			//与容器中的上一个元素进行交换//
+			std::swap(m_pDataProvider->m_vectVideo[m_nSelectedItem - 1], m_pDataProvider->m_vectVideo[m_nSelectedItem]);
+			//SortIndex交换//
+			std::swap(m_pDataProvider->m_vectVideo[m_nSelectedItem - 1].m_SortIndex, m_pDataProvider->m_vectVideo[m_nSelectedItem].m_SortIndex);
+
+			//把改动存入数据库//
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbVideo, m_pDataProvider->m_vectVideo[m_nSelectedItem - 1].m_Id);
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbVideo, m_pDataProvider->m_vectVideo[m_nSelectedItem].m_Id);
+		}
+		break;
+	default:
+		break;
+	}
+
+	return 0;
 }
 
 
+int CInitDlg::MoveDownItem()
+{
+	switch (m_InitTag)
+	{
+	case OWER_EDIT_TAG:
+		break;
+	case PRODUCTION_LINE_EDIT_TAG:
+		if (m_nSelectedItem<m_pDataProvider->m_vectProductionLine.size()-1)
+		{
+			//与容器中的下一个元素进行交换//
+			std::swap(m_pDataProvider->m_vectProductionLine[m_nSelectedItem], m_pDataProvider->m_vectProductionLine[m_nSelectedItem+1]);
+			//把生产线的SortIndex交换//
+			std::swap(m_pDataProvider->m_vectProductionLine[m_nSelectedItem].m_SortIndex, m_pDataProvider->m_vectProductionLine[m_nSelectedItem+1].m_SortIndex);
+
+			//把改动存入数据库//
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbProductionLine, m_pDataProvider->m_vectProductionLine[m_nSelectedItem].m_Id);
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbProductionLine, m_pDataProvider->m_vectProductionLine[m_nSelectedItem+1].m_Id);
+
+		}
+
+	case MODULE_EDIT_TAG:
+		if (m_nSelectedItem<m_pDataProvider->m_vectProcessModule.size()-1)
+		{
+			//与容器中的上一个元素进行交换//
+			std::swap(m_pDataProvider->m_vectProcessModule[m_nSelectedItem], m_pDataProvider->m_vectProcessModule[m_nSelectedItem+1]);
+			//把SortIndex交换//
+			std::swap(m_pDataProvider->m_vectProcessModule[m_nSelectedItem].m_SortIndex, m_pDataProvider->m_vectProcessModule[m_nSelectedItem+1].m_SortIndex);
+
+			//把改动存入数据库//
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbProcessModule, m_pDataProvider->m_vectProcessModule[m_nSelectedItem].m_Id);
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbProcessModule, m_pDataProvider->m_vectProcessModule[m_nSelectedItem+1].m_Id);
+		}
+		break;
+	case DEVICE_EDIT_TAG:
+		if (m_nSelectedItem <m_pDataProvider->m_vectDevice.size()-1)
+		{
+			//与容器中的上一个元素进行交换//
+			std::swap(m_pDataProvider->m_vectDevice[m_nSelectedItem], m_pDataProvider->m_vectDevice[m_nSelectedItem+1]);
+			//把SortIndex交换//
+			std::swap(m_pDataProvider->m_vectDevice[m_nSelectedItem].m_SortIndex, m_pDataProvider->m_vectDevice[m_nSelectedItem+1].m_SortIndex);
+
+			//把改动存入数据库//
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbDevice, m_pDataProvider->m_vectDevice[m_nSelectedItem].m_Id);
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbDevice, m_pDataProvider->m_vectDevice[m_nSelectedItem+1].m_Id);
+		}
+		break;
+	case PLC_EDIT_TAG:
+		if (m_nSelectedItem <m_pDataProvider->m_vectPlc.size()-1)
+		{
+			//与容器中的上一个元素进行交换//
+			std::swap(m_pDataProvider->m_vectPlc[m_nSelectedItem], m_pDataProvider->m_vectPlc[m_nSelectedItem+1]);
+			//把SortIndex交换//
+			std::swap(m_pDataProvider->m_vectPlc[m_nSelectedItem].m_SortIndex, m_pDataProvider->m_vectPlc[m_nSelectedItem+1].m_SortIndex);
+
+			//把改动存入数据库//
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbPLc, m_pDataProvider->m_vectPlc[m_nSelectedItem].m_Id);
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbPLc, m_pDataProvider->m_vectPlc[m_nSelectedItem+1].m_Id);
+		}
+		break;
+	case VIDEO_EDIT_TAG:
+		if (m_nSelectedItem <m_pDataProvider->m_vectVideo.size()-1)
+		{
+			//与容器中的上一个元素进行交换//
+			std::swap(m_pDataProvider->m_vectVideo[m_nSelectedItem], m_pDataProvider->m_vectVideo[m_nSelectedItem+1]);
+			//SortIndex交换//
+			std::swap(m_pDataProvider->m_vectVideo[m_nSelectedItem].m_SortIndex, m_pDataProvider->m_vectVideo[m_nSelectedItem+1].m_SortIndex);
+
+			//把改动存入数据库//
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbVideo, m_pDataProvider->m_vectVideo[m_nSelectedItem].m_Id);
+			m_pDataProvider->UpdateTableItem(CDataProvider::tbVideo, m_pDataProvider->m_vectVideo[m_nSelectedItem+1].m_Id);
+		}
+		break;
+	default:
+		break;
+	}
 
 
-
+	return 0;
+}
 
 
 
@@ -937,7 +1107,6 @@ int CInitDlg::DeleteListItem(int nItem)
 		}
 		break;
 	case PRODUCTION_LINE_EDIT_TAG:
-
 		nResult = MessageBox(_T("该操作将删除该生产线所有工艺模块，设备，摄像头等设备，是否继续当前操作？"), _T("警告"), MB_ICONEXCLAMATION | MB_YESNO);//警告//
 		if (nResult == IDYES)
 		{
@@ -963,18 +1132,17 @@ int CInitDlg::DeleteListItem(int nItem)
 		nResult = MessageBox(_T("该操作将删除该工艺模块下所有相关设备等数据，是否继续当前操作？"), _T("警告"), MB_ICONEXCLAMATION | MB_YESNO);//警告//
 		if (nResult == IDYES)
 		{
-			//删除数据库中的数据
+			//删除数据库中的数据//
 			m_pDataProvider->DeleteDbTableItem(CDataProvider::tbProcessModule,
 				m_pDataProvider->m_vectProcessModule[m_nSelectedItem].m_Id);
 
-			//删除包含该生产线的工艺模块，设备，PLC,摄像头
+			//删除包含该生产线的工艺模块，设备，PLC,摄像头//
 			tempProLineName = m_pDataProvider->m_vectProcessModule[m_nSelectedItem].m_strProductionLineName;
 			tempModuleName = m_pDataProvider->m_vectProcessModule[m_nSelectedItem].m_strProcessModuleName;
 			m_pDataProvider->DeleteDevice(tempProLineName, tempModuleName);
 			m_pDataProvider->DeleteVideo(tempProLineName, tempModuleName);
 
-
-			//删除该容器中的数据
+			//删除该容器中的数据//
 			pModuleIter = m_pDataProvider->m_vectProcessModule.begin();
 			m_pDataProvider->m_vectProcessModule.erase(pModuleIter + m_nSelectedItem);
 		}
@@ -1011,3 +1179,9 @@ int CInitDlg::DeleteListItem(int nItem)
 	}
 	return 0;
 }
+
+
+
+
+
+

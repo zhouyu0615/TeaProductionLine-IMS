@@ -19,7 +19,7 @@ public:
 	int m_ParaValue;
 	CString m_strParaName;
 	int m_IsConfig;
-	int m_IsReadOnly;
+	int m_IsVisible;
 	int m_ValueType;
 	CString m_strAddressIndex;
 	CString m_strAddressType;

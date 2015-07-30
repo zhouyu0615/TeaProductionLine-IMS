@@ -132,9 +132,6 @@
     <ClInclude Include="StatePara.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="tbDevice.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="tbDevicePara.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -144,25 +141,13 @@
     <ClInclude Include="tbLoginUser.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="tbPLc.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="tbProcessModule.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="tbProcessPara.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="tbProductionLine.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="tbStatePara.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="tbUser.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="tbVideo.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="UserClass.h">
@@ -172,6 +157,21 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="LoginDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tbProductionLine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tbProcessModule.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tbPLc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tbVideo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tbDevice.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -284,9 +284,6 @@
     <ClCompile Include="StatePara.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="tbDevice.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="tbDevicePara.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -296,25 +293,13 @@
     <ClCompile Include="tbLoginUser.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="tbPLc.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="tbProcessModule.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="tbProcessPara.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="tbProductionLine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="tbStatePara.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="tbUser.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="tbVideo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="UserClass.cpp">
@@ -324,6 +309,21 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="LoginDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tbProductionLine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tbProcessModule.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tbPLc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tbVideo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tbDevice.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

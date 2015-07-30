@@ -2,7 +2,7 @@
 
 #pragma once
 
-// 代码生成在 2015年7月18日 星期六, 12:04
+// 代码生成在 2015年7月29日 星期三, 21:01
 
 class CtbDevice : public CRecordset
 {
@@ -31,6 +31,7 @@ public:
 	CStringA	m_DeviceType;
 	CStringA	m_ProcessModuleName;
 	CStringA	m_Description;
+	long	m_SortIndex;
 
 // 重写
 	// 向导生成的虚函数重写

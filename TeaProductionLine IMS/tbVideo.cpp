@@ -4,7 +4,7 @@
 
 // CtbVideo 实现
 
-// 代码生成在 2015年7月26日 星期日, 11:25
+// 代码生成在 2015年7月29日 星期三, 20:10
 
 #include "stdafx.h"
 #include "tbVideo.h"
@@ -23,8 +23,9 @@ CtbVideo::CtbVideo(CDatabase* pdb)
 	m_ProductionLineId = 0;
 	m_Description = "";
 	m_VideoName = "";
-	m_strIPAddr = "";
-	m_nFields = 11;
+	m_IPAddr = "";
+	m_SortIndex = 0;
+	m_nFields = 12;
 	m_nDefaultType = dynaset;
 }
 //#error 安全问题：连接字符串可能包含密码。
@@ -58,7 +59,8 @@ void CtbVideo::DoFieldExchange(CFieldExchange* pFX)
 	RFX_Long(pFX, _T("[ProductionLineId]"), m_ProductionLineId);
 	RFX_Text(pFX, _T("[Description]"), m_Description);
 	RFX_Text(pFX, _T("[VideoName]"), m_VideoName);
-	RFX_Text(pFX, _T("[IPAddr]"), m_strIPAddr);
+	RFX_Text(pFX, _T("[IPAddr]"), m_IPAddr);
+	RFX_Long(pFX, _T("[SortIndex]"), m_SortIndex);
 
 }
 /////////////////////////////////////////////////////////////////////////////

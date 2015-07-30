@@ -11,6 +11,7 @@ CProductionLineClass::CProductionLineClass()
 	m_UserId = 0;
 	m_strCapacity = _T("");
 	m_strDescription = _T("");
+	m_SortIndex = 0;
 }
 
 

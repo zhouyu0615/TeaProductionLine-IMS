@@ -55,6 +55,7 @@ CDataProvider* CDataProvider::getInstance(){
 
 void CDataProvider::InitDataProvider()
 {
+	this->ReadLoginUserFormDatabase();
 
 	this->ReadUserFromDatabase();
 	this->ReadProLineFromDatabase();
@@ -62,6 +63,11 @@ void CDataProvider::InitDataProvider()
 	this->ReadDeviceFromDatabase();
 	this->ReadPlcFromDatabase();
 	this->ReadVideoFromDatabase();
+
+	this->ReadDeviceParaFromDatabase();
+	this->ReadProcessParaFromDatabase();
+	this->ReadFaultParaFromDatabase();
+	this->ReadStateParaFromDatabase();
 }
 
 
@@ -86,8 +92,8 @@ int CDataProvider::FindProModuleId(CString ProductionLineName, CString ModuleNam
 	int ProModuleId;
 	for (int i = 0; i < m_vectProcessModule.size(); i++)
 	{
-		if (ProductionLineName == m_vectProcessModule[i].m_strProcessModuleName
-			&&ModuleName == m_vectProcessModule[i].m_strProductionLineName)
+		if (ProductionLineName == m_vectProcessModule[i].m_strProductionLineName
+			&&ModuleName == m_vectProcessModule[i].m_strProcessModuleName)
 		{
 			ProModuleId = m_vectProcessModule[i].m_Id;
 			return ProModuleId;
@@ -166,12 +172,36 @@ void CDataProvider::AddLoginUserToDatabase(CLoginUser tempLoginUser)
 		m_tbLoginUserSet.m_LastUpdatedDateTime = time;
 		m_tbLoginUserSet.m_LoginName = tempLoginUser.m_strLoginName;
 		m_tbLoginUserSet.m_LoginPassWd = tempLoginUser.m_strLoginPassWd;
+		m_tbLoginUserSet.m_PermissionLevel = tempLoginUser.m_PermissionLevel;
+		m_tbLoginUserSet.m_IsAutoLogin = tempLoginUser.m_IsAutoLogin;
+		m_tbLoginUserSet.m_IsRememberPasswd = tempLoginUser.m_IsRememberPasswd;
 
 		m_tbLoginUserSet.Update();
 
 	}
 	m_tbLoginUserSet.Close();
 
+}
+
+void CDataProvider::UpdateUserLoginTime(int LoginUserId)
+{
+	CString strsql;
+	strsql.Format(_T("UPDATE tbLoginUser SET LastLoginInTime=getdate() where ID=%d"),LoginUserId);
+	CtbLoginUser tbLoginUser;
+	try{
+		if (tbLoginUser.Open(CRecordset::dynaset)){
+			tbLoginUser.m_pDatabase->ExecuteSQL(strsql);
+		}
+		else{
+			AfxMessageBox(_T("打开数据库失败！"));
+			tbLoginUser.Close();
+			return ;
+		}
+	}
+	catch (CDBException *e){
+		e->ReportError();
+	}
+	tbLoginUser.Close();
 }
 
 void CDataProvider::AddUserToDatabase(CUserClass tempUser)
@@ -244,9 +274,11 @@ void CDataProvider::AddProLineToDatabase(CProductionLineClass tempProLine)
 	if (length == 0)//设置第一条生产线的ID
 	{
 		tempProLine.m_Id = 1;
+		tempProLine.m_SortIndex = 1;
 	}
 	else{
 		tempProLine.m_Id = m_vectProductionLine[length - 1].m_Id + 1;
+		tempProLine.m_SortIndex = m_vectProductionLine[length - 1].m_SortIndex + 1;
 	}
 	tempProLine.m_UserId = m_vectUser[0].m_UserId; ////唯一用户ID
 
@@ -263,6 +295,7 @@ void CDataProvider::AddProLineToDatabase(CProductionLineClass tempProLine)
 		tbProductionLine.m_UserId = tempProLine.m_UserId; 
 		tbProductionLine.m_Capacity = tempProLine.m_strCapacity;
 		tbProductionLine.m_Description = tempProLine.m_strDescription;
+		tbProductionLine.m_SortIndex = tempProLine.m_SortIndex;
 		tbProductionLine.Update();
 
 	}
@@ -292,9 +325,11 @@ void CDataProvider::AddProModuleToDatabase(CProcessModuleClass tempProModule)
 	if (length == 0)//设置第一个模块ID
 	{
 		tempProModule.m_Id = 1000;
+		tempProModule.m_SortIndex = 1000;
 	}
 	else{
 		tempProModule.m_Id = m_vectProcessModule[length - 1].m_Id + 1;
+		tempProModule.m_SortIndex = m_vectProcessModule[length - 1].m_SortIndex + 1;
 	}
 
 	//存储模块所属用户ID
@@ -317,6 +352,7 @@ void CDataProvider::AddProModuleToDatabase(CProcessModuleClass tempProModule)
 		tbProcessModule.m_ProductionLineId = tempProModule.m_ProcessLineId; //所属生产线ID
 		tbProcessModule.m_ModuleName = tempProModule.m_strProcessModuleName;
 		tbProcessModule.m_Description = tempProModule.m_strDescription;
+		tbProcessModule.m_SortIndex = tempProModule.m_SortIndex;
 		tbProcessModule.Update();
 	}
 
@@ -344,9 +380,11 @@ void CDataProvider::AddDeviceToDatabase(CDeviceClass tempDevice)
 	if (length == 0)//设置第一个模块ID
 	{
 		tempDevice.m_Id = 1000;
+		tempDevice.m_SortIndex = 1000;
 	}
 	else{
 		tempDevice.m_Id = m_vectDevice[length - 1].m_Id + 1;
+		tempDevice.m_SortIndex = m_vectDevice[length - 1].m_SortIndex + 1;
 	}
 	
 
@@ -374,6 +412,7 @@ void CDataProvider::AddDeviceToDatabase(CDeviceClass tempDevice)
 		tbDevice.m_DeviceType = tempDevice.m_strDeviceType;
 		tbDevice.m_ProductionLineId = tempDevice.m_ProductionLineId; //所属生产线的ID
 		tbDevice.m_ProcessModuleId = tempDevice.m_ProcessModuleId;// 所属工艺模块的ID
+		tbDevice.m_SortIndex = tempDevice.m_SortIndex;
 
 		tbDevice.Update();
 
@@ -403,9 +442,11 @@ void CDataProvider::AddPlcToDatabase(CPlcClass tempPlc)
 	if (length == 0)//设置第一个PLC ID
 	{
 		tempPlc.m_Id = 1000;
+		tempPlc.m_SortIndex = 1000;
 	}
 	else{
 		tempPlc.m_Id = m_vectPlc[length - 1].m_Id + 1;
+		tempPlc.m_SortIndex = m_vectPlc[length - 1].m_SortIndex+ 1;
 	}
 	
 	tempPlc.m_UserId = m_vectUser[0].m_UserId;
@@ -430,8 +471,9 @@ void CDataProvider::AddPlcToDatabase(CPlcClass tempPlc)
 		tbPlc.m_ReadLength = tempPlc.m_ReadLength;
 		tbPlc.m_WriteStartAddr = tempPlc.m_WriteStartAddr;
 		tbPlc.m_WriteLength = tempPlc.m_WriteLength;
-
 		tbPlc.m_Description = tempPlc.m_strDescription;
+		tbPlc.m_SortIndex = tempPlc.m_SortIndex;
+
 		tbPlc.Update();
 
 	}
@@ -461,9 +503,11 @@ void CDataProvider::AddVideoToDatabase(CVideoClass tempVideo)
 	if (length == 0)//设置第一个模块ID
 	{
 		tempVideo.m_Id = 1000;
+		tempVideo.m_SortIndex = 1000;
 	}
 	else{
 		tempVideo.m_Id = m_vectVideo[length - 1].m_Id + 1;
+		tempVideo.m_SortIndex = m_vectVideo[length - 1].m_SortIndex + 1;
 	}
 	
 	
@@ -483,11 +527,13 @@ void CDataProvider::AddVideoToDatabase(CVideoClass tempVideo)
 		tbVideo.m_ProductionLineName = tempVideo.m_strProductionLineName;
 		tbVideo.m_ProcessModuleName = tempVideo.m_strProcessModuleName;
 		tbVideo.m_VideoName = tempVideo.m_strVideoName;
-		tbVideo.m_strIPAddr = tempVideo.m_strIPAddr;
+		tbVideo.m_IPAddr = tempVideo.m_strIPAddr;
 		tbVideo.m_Port = tempVideo.m_port;
 
 		tbVideo.m_ProductionLineId = tempVideo.m_ProductionLineId;
 		tbVideo.m_ProcessModuleId = tempVideo.m_ModuleId;
+		tbVideo.m_SortIndex = tempVideo.m_SortIndex;
+
 		tbVideo.Update();
 
 	}
@@ -672,7 +718,7 @@ void CDataProvider::AddProcessParaToDatabase(CProcessPara tempProcessPara)
 		tbProcessPara.m_Description = tempProcessPara.m_strDescription;
 		tbProcessPara.m_ValueType = tempProcessPara.m_ValueType;
 		tbProcessPara.m_IsConfig = tempProcessPara.m_IsConfig;
-		tbProcessPara.m_IsReadOnly = tempProcessPara.m_IsReadOnly;
+		tbProcessPara.m_IsReadOnly = tempProcessPara.m_IsVisible;
 
 		tbProcessPara.Update();
 
@@ -898,7 +944,7 @@ void CDataProvider::ReadProcessParaFromDatabase()
 		tempProcessPara.m_strDescription=tbProcessPara.m_Description;
 		tempProcessPara.m_ValueType=tbProcessPara.m_ValueType;
 		tempProcessPara.m_IsConfig=tbProcessPara.m_IsConfig;
-		tempProcessPara.m_IsReadOnly=tbProcessPara.m_IsReadOnly;
+		tempProcessPara.m_IsVisible=tbProcessPara.m_IsReadOnly;
 
 		m_vectProModulePara.push_back(tempProcessPara);
 		tbProcessPara.MoveNext();
@@ -1053,7 +1099,7 @@ void CDataProvider::ReadUserFromDatabase(){
 
 void CDataProvider::ReadProLineFromDatabase(){
 	CString strsql;
-	strsql.Format(_T("select * from tbProductionLine order by Id"));
+	strsql.Format(_T("select * from tbProductionLine order by SortIndex"));
 
 	CtbProductionLine tbProductionLine;
 	try{
@@ -1084,6 +1130,7 @@ void CDataProvider::ReadProLineFromDatabase(){
 		tempProductionLine.m_strDescription = tbProductionLine.m_Description;
 
 		tempProductionLine.m_UserId = tbProductionLine.m_UserId;
+		tempProductionLine.m_SortIndex = tbProductionLine.m_SortIndex;
 
 		m_vectProductionLine.push_back(tempProductionLine);
 		tbProductionLine.MoveNext();
@@ -1097,7 +1144,7 @@ void CDataProvider::ReadProLineFromDatabase(){
 void CDataProvider::ReadProModuleFromDatabase()
 {
 	CString strsql;
-	strsql.Format(_T("select * from tbProcessModule order by Id"));
+	strsql.Format(_T("select * from tbProcessModule order by SortIndex"));
 
 	CtbProcessModule  tbProcessModule;
 	try{
@@ -1130,6 +1177,7 @@ void CDataProvider::ReadProModuleFromDatabase()
 		tempModule.m_ProcessLineId = tbProcessModule.m_ProductionLineId;
 
 		tempModule.m_UserId = tbProcessModule.m_UserId;
+		tempModule.m_SortIndex = tbProcessModule.m_SortIndex;
 
 		m_vectProcessModule.push_back(tempModule);
 		tbProcessModule.MoveNext();
@@ -1143,7 +1191,7 @@ void CDataProvider::ReadProModuleFromDatabase()
 void CDataProvider::ReadDeviceFromDatabase()
 {
 	CString strsql;
-	strsql.Format(_T("select * from tbDevice order by Id"));
+	strsql.Format(_T("select * from tbDevice order by SortIndex"));
 
 	CtbDevice  tbDevice;
 	try{
@@ -1166,7 +1214,6 @@ void CDataProvider::ReadDeviceFromDatabase()
 	CDeviceClass tempDevice;
 	tbDevice.MoveFirst();
 	while (!tbDevice.IsEOF()){
-
 		tempDevice.m_Id = tbDevice.m_Id;
 		tempDevice.m_strProductionLineName = tbDevice.m_ProductionLineName;
 		tempDevice.m_strProcessModuleName = tbDevice.m_ProcessModuleName;
@@ -1174,6 +1221,7 @@ void CDataProvider::ReadDeviceFromDatabase()
 		tempDevice.m_strDeviceType = tbDevice.m_DeviceType;
 		tempDevice.m_ProcessModuleId = tbDevice.m_ProcessModuleId;
 		tempDevice.m_ProductionLineId = tbDevice.m_ProductionLineId;
+		tempDevice.m_SortIndex = tbDevice.m_SortIndex;
 
 		m_vectDevice.push_back(tempDevice);
 		tbDevice.MoveNext();
@@ -1190,7 +1238,7 @@ void CDataProvider::ReadDeviceFromDatabase()
 void CDataProvider::ReadPlcFromDatabase()
 {
 	CString strsql;
-	strsql.Format(_T("select * from tbPLc order by Id"));
+	strsql.Format(_T("select * from tbPLc order by SortIndex"));
 
 	CtbPLc  tbPlc;
 	try{
@@ -1217,11 +1265,17 @@ void CDataProvider::ReadPlcFromDatabase()
 
 		tempPlc.m_Id = tbPlc.m_Id;
 		tempPlc.m_strProductionLineName = tbPlc.m_ProductionLineName;
+		tempPlc.m_ProductionLineId = tbPlc.m_ProductionLineId;
+
 		tempPlc.m_strPlcName = tbPlc.m_PLCName;
 		tempPlc.m_strIPAddr = tbPlc.m_strIPAddr;
 		tempPlc.m_strDescription = tbPlc.m_Description;
-		tempPlc.m_ProductionLineId = tbPlc.m_ProductionLineId;
+		tempPlc.m_ReadStartAddr = tbPlc.m_ReadStartAddr;
+		tempPlc.m_ReadLength = tbPlc.m_ReadLength;
+		tempPlc.m_WriteStartAddr = tbPlc.m_WriteStartAddr;
+		tempPlc.m_WriteLength = tbPlc.m_WriteLength;
 
+		tempPlc.m_SortIndex = tbPlc.m_SortIndex;
 
 		m_vectPlc.push_back(tempPlc);
 		tbPlc.MoveNext();
@@ -1238,7 +1292,7 @@ void CDataProvider::ReadPlcFromDatabase()
 void CDataProvider::ReadVideoFromDatabase()
 {
 	CString strsql;
-	strsql.Format(_T("select * from tbVideo order by Id"));
+	strsql.Format(_T("select * from tbVideo order by SortIndex"));
 
 	CtbVideo  tbVideo;
 	try{
@@ -1267,13 +1321,14 @@ void CDataProvider::ReadVideoFromDatabase()
 		tempVideo.m_Id = tbVideo.m_Id;
 		tempVideo.m_strProductionLineName = tbVideo.m_ProductionLineName;
 		tempVideo.m_strProcessModuleName = tbVideo.m_ProcessModuleName;
-		tempVideo.m_strIPAddr = tbVideo.m_strIPAddr;
+		tempVideo.m_strIPAddr = tbVideo.m_IPAddr;
 		tempVideo.m_strVideoName = tbVideo.m_VideoName;
 
 		tempVideo.m_port = tbVideo.m_Port;
 
 		tempVideo.m_ProductionLineId = tbVideo.m_ProductionLineId;
 		tempVideo.m_ModuleId = tbVideo.m_ProcessModuleId;
+		tempVideo.m_SortIndex = tbVideo.m_SortIndex;
 
 		m_vectVideo.push_back(tempVideo);
 		tbVideo.MoveNext();
@@ -1467,9 +1522,12 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			}
 
 		}
-		strsql.Format(_T("UPDATE tbProductionLine SET LastUpdatedDateTime=getdate(), LineName = '%s',Capacity='%s',Description='%s' WHERE Id = '%d'"),
-			tempProLine.m_strLineName, tempProLine.m_strCapacity,
-			tempProLine.m_strDescription, Id);
+		strsql.Format(_T("UPDATE tbProductionLine SET LastUpdatedDateTime=getdate(), LineName = '%s',Capacity='%s',Description='%s',SortIndex='%d' WHERE Id = '%d'"),
+			tempProLine.m_strLineName,
+			tempProLine.m_strCapacity,
+			tempProLine.m_strDescription, 
+			tempProLine.m_SortIndex,
+			Id);
 		break;
 	case CDataProvider::tbProcessModule:
 		for (int i = 0; i < m_vectProcessModule.size(); i++)
@@ -1481,9 +1539,12 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			}
 
 		}
-		strsql.Format(_T("UPDATE tbProcessModule SET LastUpdatedDateTime=getdate(), ModuleName = '%s',ProductionLineName='%s',Description='%s' WHERE Id = '%d'"),
-			tempModule.m_strProcessModuleName, tempModule.m_strProductionLineName,
-			tempModule.m_strDescription, Id);
+		strsql.Format(_T("UPDATE tbProcessModule SET LastUpdatedDateTime=getdate(), ModuleName = '%s',ProductionLineName='%s',Description='%s',SortIndex='%d' WHERE Id = '%d'"),
+			tempModule.m_strProcessModuleName, 
+			tempModule.m_strProductionLineName,
+			tempModule.m_strDescription,
+			tempModule.m_SortIndex,
+			Id);
 		break;
 	case CDataProvider::tbDevice:
 		for (int i = 0; i < m_vectDevice.size(); i++)
@@ -1495,9 +1556,13 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			}
 
 		}
-		strsql.Format(_T("UPDATE tbDevice  SET LastUpdatedDateTime=getdate(), ProductionLineName='%s',ProcessModuleName = '%s',DeviceName='%s',DeviceType='%s' WHERE Id = '%d'"),
-			tempDevice.m_strProductionLineName, tempDevice.m_strProcessModuleName,
-			tempDevice.m_strDeviceName, tempDevice.m_strDeviceType, Id);
+		strsql.Format(_T("UPDATE tbDevice  SET LastUpdatedDateTime=getdate(), ProductionLineName='%s',ProcessModuleName = '%s',DeviceName='%s',DeviceType='%s',SortIndex='%d' WHERE Id = '%d'"),
+			tempDevice.m_strProductionLineName,
+			tempDevice.m_strProcessModuleName,
+			tempDevice.m_strDeviceName,
+			tempDevice.m_strDeviceType, 
+			tempDevice.m_SortIndex,
+			Id);
 
 		break;
 	case CDataProvider::tbPLc:
@@ -1510,7 +1575,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			}
 
 		}
-		strsql.Format(_T("UPDATE tbPLc SET LastUpdatedDateTime=getdate(), ProductionLineName = '%s',PLCName='%s',strIPAddr='%s',ReadStartAddr='%d',ReadLength='%d',WriteStartAddr='%d',WriteLength='%d',Description='%s' WHERE Id = '%d'"),
+		strsql.Format(_T("UPDATE tbPLc SET LastUpdatedDateTime=getdate(), ProductionLineName = '%s',PLCName='%s',strIPAddr='%s',ReadStartAddr='%d',ReadLength='%d',WriteStartAddr='%d',WriteLength='%d',Description='%s',SortIndex='%d' WHERE Id = '%d'"),
 			tempPlc.m_strProductionLineName, tempPlc.m_strPlcName,
 			tempPlc.m_strIPAddr,
 			tempPlc.m_ReadStartAddr,
@@ -1518,6 +1583,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			tempPlc.m_WriteStartAddr,
 			tempPlc.m_WriteLength,
 			tempPlc.m_strDescription, 
+			tempPlc.m_SortIndex,
 			Id);
 		break;
 	case CDataProvider::tbVideo:
@@ -1530,9 +1596,12 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			}
 
 		}
-		strsql.Format(_T("UPDATE tbVideo SET LastUpdatedDateTime=getdate(), ProductionLineName = '%s',ProcessModuleName='%s',VideoName='%s',IPAddr='%s' WHERE Id = '%d'"),
+		strsql.Format(_T("UPDATE tbVideo SET LastUpdatedDateTime=getdate(), ProductionLineName = '%s',ProcessModuleName='%s',VideoName='%s',IPAddr='%s',SortIndex='%d' WHERE Id = '%d'"),
 			tempVideo.m_strProductionLineName, tempVideo.m_strProcessModuleName,
-			tempVideo.m_strVideoName, tempVideo.m_strIPAddr, Id);
+			tempVideo.m_strVideoName,
+			tempVideo.m_strIPAddr,
+			tempVideo.m_SortIndex,
+			Id);
 		break;
 
 	case CDataProvider::tbLoginUser:
@@ -1545,7 +1614,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			}
 		}
 
-		strsql.Format(_T("UPDATE tbLoginUser SET  LastLoginInTime=getdate(), LoginName = '%s',LoginPassWd='%s',PermissionLevel='%d',IsAutoLogin='%d',IsRememberPasswd='%d' WHERE Id = '%d'"),
+		strsql.Format(_T("UPDATE tbLoginUser SET  LastUpdatedDateTime=getdate(), LoginName = '%s',LoginPassWd='%s',PermissionLevel='%d',IsAutoLogin='%d',IsRememberPasswd='%d' WHERE Id = '%d'"),
 			tempLoginUser.m_strLoginName,
 			tempLoginUser.m_strLoginPassWd,
 			tempLoginUser.m_PermissionLevel,
@@ -1772,4 +1841,157 @@ int CDataProvider::SearchVideo(CString ProductionLineName, CString ModuleName)
 	}
 	return 0;
 }
+
+
+/*修改与生产线相关的模块，设备，摄像头,工艺参数，设备参数，故障参数，模块参数，状态参数中存储的所属生产线名
+   参数说明:int LineId,修改的生产线的ID,
+			CString modifyLineName ,将生产线名修改成modifyLineName
+
+*/
+int CDataProvider::UpdateRelatedToLine(int LineId, CString modifyLineName)
+{
+	for (int i = 0; i < m_vectProcessModule.size();i++)
+	{
+		if (m_vectProcessModule[i].m_ProcessLineId == LineId)
+		{
+			m_vectProcessModule[i].m_strProductionLineName = modifyLineName;
+			//更新数据库
+			UpdateTableItem(CDataProvider::tbProcessModule, m_vectProcessModule[i].m_Id);
+		}
+	}
+
+	for (int i = 0; i < m_vectDevice.size();i++)
+	{
+		if (m_vectDevice[i].m_ProductionLineId==LineId)
+		{
+			m_vectDevice[i].m_strProductionLineName = modifyLineName;
+			UpdateTableItem(tbDevice, m_vectDevice[i].m_Id);
+		}
+	}
+	//修改摄像头
+	for (int i = 0; i < m_vectVideo.size();i++)
+	{
+		if (m_vectVideo[i].m_ProductionLineId==LineId)
+		{
+			m_vectVideo[i].m_strProductionLineName = modifyLineName;
+			UpdateTableItem(tbVideo, m_vectVideo[i].m_Id);
+		}
+	}
+
+	//修改工艺参数//
+	for (int i = 0; i < m_vectProModulePara.size();i++)
+	{
+
+		if (m_vectProModulePara[i].m_ProductionLineId == LineId)
+		{
+			m_vectProModulePara[i].m_strProductionLineName = modifyLineName;
+			UpdateTableItem(tbProcessPara, m_vectProModulePara[i].m_Id);
+		}
+	}
+
+	//修改故障参数//
+	for (int i = 0; i < m_vectFaultPara.size(); i++)
+	{
+
+		if (m_vectFaultPara[i].m_ProductionLineId == LineId)
+		{
+			m_vectFaultPara[i].m_strProductionLineName = modifyLineName;
+			UpdateTableItem(tbFaultPara, m_vectFaultPara[i].m_Id);
+		}
+	}
+
+	//修改状态参数//
+	for (int i = 0; i < m_vectStatePara.size(); i++)
+	{
+
+		if (m_vectStatePara[i].m_ProductionLineId == LineId)
+		{
+			m_vectStatePara[i].m_strProductionLineName = modifyLineName;
+			UpdateTableItem(tbStatePara, m_vectStatePara[i].m_Id);
+		}
+	}
+
+	//修改设备参数//
+	for (int i = 0; i < m_vectDevicePara.size(); i++)
+	{
+
+		if (m_vectDevicePara[i].m_ProductionLineId == LineId)
+		{
+			m_vectDevicePara[i].m_strProductionLineName = modifyLineName;
+			UpdateTableItem(tbDevicePara, m_vectDevicePara[i].m_Id);
+		}
+	}
+
+	return 0;
+}
+
+
+int CDataProvider::UpdateRelatedToModule(int ModuleId, CString modifyModuleName)
+{
+	//修改设备//
+	for (int i = 0; i < m_vectDevice.size(); i++)
+	{
+		if (m_vectDevice[i].m_ProcessModuleId == ModuleId)
+		{
+			m_vectDevice[i].m_strProcessModuleName = modifyModuleName;
+			UpdateTableItem(tbDevice, m_vectDevice[i].m_Id);
+		}
+	}
+	//修改摄像头
+	for (int i = 0; i < m_vectVideo.size(); i++)
+	{
+		if (m_vectVideo[i].m_ModuleId == ModuleId)
+		{
+			m_vectVideo[i].m_strProcessModuleName = modifyModuleName;
+			UpdateTableItem(tbVideo, m_vectVideo[i].m_Id);
+		}
+	}
+
+	//修改工艺参数//
+	for (int i = 0; i < m_vectProModulePara.size(); i++)
+	{
+
+		if (m_vectProModulePara[i].m_ProcessModuleId == ModuleId)
+		{
+			m_vectProModulePara[i].m_strProcessModuleName = modifyModuleName;
+			UpdateTableItem(tbProcessPara, m_vectProModulePara[i].m_Id);
+		}
+	}
+
+	//修改故障参数//
+	for (int i = 0; i < m_vectFaultPara.size(); i++)
+	{
+
+		if (m_vectFaultPara[i].m_ProcessModuleId == ModuleId)
+		{
+			m_vectFaultPara[i].m_strProcessName = modifyModuleName;
+			UpdateTableItem(tbFaultPara, m_vectFaultPara[i].m_Id);
+		}
+	}
+
+	//修改状态参数//
+	for (int i = 0; i < m_vectStatePara.size(); i++)
+	{
+
+		if (m_vectStatePara[i].m_ProcessModuleId == ModuleId)
+		{
+			m_vectStatePara[i].m_strProcessModuleName = modifyModuleName;
+			UpdateTableItem(tbStatePara, m_vectStatePara[i].m_Id);
+		}
+	}
+
+	//修改设备参数//
+	for (int i = 0; i < m_vectDevicePara.size(); i++)
+	{
+
+		if (m_vectDevicePara[i].m_ProcessModuleId == ModuleId)
+		{
+			m_vectDevicePara[i].m_strProcessModuleName = modifyModuleName;
+			UpdateTableItem(tbDevicePara, m_vectDevicePara[i].m_Id);
+		}
+	}
+
+	return 0;
+}
+
 

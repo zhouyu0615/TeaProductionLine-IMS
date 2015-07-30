@@ -4,7 +4,7 @@
 
 // CtbProductionLine 实现
 
-// 代码生成在 2015年7月17日 星期五, 10:38
+// 代码生成在 2015年7月29日 星期三, 19:34
 
 #include "stdafx.h"
 #include "tbProductionLine.h"
@@ -20,7 +20,8 @@ CtbProductionLine::CtbProductionLine(CDatabase* pdb)
 	m_UserId = 0;
 	m_Capacity = "";
 	m_Description = "";
-	m_nFields = 7;
+	m_SortIndex = 0;
+	m_nFields = 8;
 	m_nDefaultType = dynaset;
 }
 //#error 安全问题：连接字符串可能包含密码。
@@ -51,6 +52,7 @@ void CtbProductionLine::DoFieldExchange(CFieldExchange* pFX)
 	RFX_Long(pFX, _T("[UserId]"), m_UserId);
 	RFX_Text(pFX, _T("[Capacity]"), m_Capacity);
 	RFX_Text(pFX, _T("[Description]"), m_Description);
+	RFX_Long(pFX, _T("[SortIndex]"), m_SortIndex);
 
 }
 /////////////////////////////////////////////////////////////////////////////

@@ -13,6 +13,7 @@ CProcessModuleClass::CProcessModuleClass()
 	m_strProcessModuleName = _T("");
 	m_strProductionLineName = _T("");
 	m_UserId = 0;
+	m_SortIndex = 0;
 }
 
 

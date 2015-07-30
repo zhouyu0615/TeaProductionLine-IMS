@@ -10,6 +10,7 @@ CVideoClass::CVideoClass()
 	m_strProductionLineName = _T("");
 	m_strIPAddr = _T("");
 	m_port = 0;
+	m_SortIndex = 0;
 }
 
 

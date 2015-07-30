@@ -35,7 +35,7 @@ BEGIN_MESSAGE_MAP(CEditLinePopDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CEditLinePopDlg 消息处理程序
+// CEditLinePopDlg 消息处理程序 
 
 
 void CEditLinePopDlg::OnBnClickedOk()
@@ -50,6 +50,8 @@ void CEditLinePopDlg::OnBnClickedOk()
 	m_pDataProvider->m_vectProductionLine[m_nSelectedItem].m_strDescription = strDescription;
 	int Id = m_pDataProvider->m_vectProductionLine[m_nSelectedItem].m_Id;
 	m_pDataProvider->UpdateTableItem(CDataProvider::tbProductionLine,Id);
+	m_pDataProvider->UpdateRelatedToLine(Id, strLineName);
+
 	CDialogEx::OnOK();
 }
 

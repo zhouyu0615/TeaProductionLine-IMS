@@ -14,5 +14,6 @@ public:
 	CString m_strProcessModuleName;
 	
 	int m_UserId;
+	int m_SortIndex;
 };
 

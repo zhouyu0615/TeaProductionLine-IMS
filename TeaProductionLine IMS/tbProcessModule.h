@@ -2,7 +2,7 @@
 
 #pragma once
 
-// 代码生成在 2015年7月18日 星期六, 12:03
+// 代码生成在 2015年7月29日 星期三, 20:09
 
 class CtbProcessModule : public CRecordset
 {
@@ -29,6 +29,7 @@ public:
 	CStringA	m_Description;
 	CStringA	m_ProductionLineName;
 	long	m_ProductionLineId;
+	long	m_SortIndex;
 
 // 重写
 	// 向导生成的虚函数重写

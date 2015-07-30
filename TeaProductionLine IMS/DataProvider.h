@@ -78,6 +78,7 @@ public:
 	
 	void ReadLoginUserFormDatabase();
 	void AddLoginUserToDatabase(CLoginUser tempLoginUser);
+	void UpdateUserLoginTime(int LoginUserId);
 
 	void AddUserToDatabase(CUserClass tempUser);
 	void ReadUserFromDatabase();
@@ -140,6 +141,9 @@ public:
 	int SearchVideo(CString ProducitonLinaName, CString ModuleName);
 
 
+	int UpdateRelatedToLine(int LineId, CString modifyLineName);
+	int UpdateRelatedToModule(int ModuleId, CString modifyModuleName);
+	int UpdateRelatedToPlc(int PlcId, CString modifyPlcName);
 
 	
 

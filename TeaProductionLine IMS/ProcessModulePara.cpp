@@ -14,7 +14,7 @@ CProcessPara::CProcessPara()
 	m_ParaValue = 0;
 	m_strParaName = _T("");
 	m_IsConfig = 0;
-	m_IsReadOnly = 0;
+	m_IsVisible = 0;
 	m_ValueType = 0;
 	m_strAddressIndex = _T("");
 	m_strAddressType = _T("");

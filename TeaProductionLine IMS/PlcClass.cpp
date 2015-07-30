@@ -14,6 +14,7 @@ CPlcClass::CPlcClass()
 	m_ReadLength = 0;
 	m_WriteStartAddr = 0;
 	m_WriteLength = 0;
+	m_SortIndex = 0;
 }
 
 

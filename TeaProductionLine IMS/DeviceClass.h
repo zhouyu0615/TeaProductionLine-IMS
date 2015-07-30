@@ -12,5 +12,6 @@ public:
 	CString m_strDeviceType;
 	int m_ProductionLineId;
 //	CString m_strModuleName;
+	int m_SortIndex;
 };
 

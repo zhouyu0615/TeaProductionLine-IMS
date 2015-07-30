@@ -4,7 +4,7 @@
 
 // CtbPLc 实现
 
-// 代码生成在 2015年7月26日 星期日, 11:14
+// 代码生成在 2015年7月29日 星期三, 20:10
 
 #include "stdafx.h"
 #include "tbPLc.h"
@@ -26,7 +26,8 @@ CtbPLc::CtbPLc(CDatabase* pdb)
 	m_ReadLength = 0;
 	m_WriteStartAddr = 0;
 	m_WriteLength = 0;
-	m_nFields = 13;
+	m_SortIndex = 0;
+	m_nFields = 14;
 	m_nDefaultType = dynaset;
 }
 //#error 安全问题：连接字符串可能包含密码。
@@ -63,6 +64,7 @@ void CtbPLc::DoFieldExchange(CFieldExchange* pFX)
 	RFX_Long(pFX, _T("[ReadLength]"), m_ReadLength);
 	RFX_Long(pFX, _T("[WriteStartAddr]"), m_WriteStartAddr);
 	RFX_Long(pFX, _T("[WriteLength]"), m_WriteLength);
+	RFX_Long(pFX, _T("[SortIndex]"), m_SortIndex);
 
 }
 /////////////////////////////////////////////////////////////////////////////

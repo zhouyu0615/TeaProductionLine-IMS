@@ -11,5 +11,6 @@ public:
 	int m_UserId;
 	CString m_strCapacity;
 	CString m_strDescription;
+	int m_SortIndex;
 };
 

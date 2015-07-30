@@ -4,7 +4,7 @@
 
 // CtbDevice 实现
 
-// 代码生成在 2015年7月18日 星期六, 12:04
+// 代码生成在 2015年7月29日 星期三, 21:01
 
 #include "stdafx.h"
 #include "tbDevice.h"
@@ -24,7 +24,8 @@ CtbDevice::CtbDevice(CDatabase* pdb)
 	m_DeviceType = "";
 	m_ProcessModuleName = "";
 	m_Description = "";
-	m_nFields = 11;
+	m_SortIndex = 0;
+	m_nFields = 12;
 	m_nDefaultType = dynaset;
 }
 //#error 安全问题：连接字符串可能包含密码。
@@ -59,6 +60,7 @@ void CtbDevice::DoFieldExchange(CFieldExchange* pFX)
 	RFX_Text(pFX, _T("[DeviceType]"), m_DeviceType);
 	RFX_Text(pFX, _T("[ProcessModuleName]"), m_ProcessModuleName);
 	RFX_Text(pFX, _T("[Description]"), m_Description);
+	RFX_Long(pFX, _T("[SortIndex]"), m_SortIndex);
 
 }
 /////////////////////////////////////////////////////////////////////////////

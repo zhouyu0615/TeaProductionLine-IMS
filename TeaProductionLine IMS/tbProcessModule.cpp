@@ -4,7 +4,7 @@
 
 // CtbProcessModule 实现
 
-// 代码生成在 2015年7月18日 星期六, 12:03
+// 代码生成在 2015年7月29日 星期三, 20:09
 
 #include "stdafx.h"
 #include "tbProcessModule.h"
@@ -22,7 +22,8 @@ CtbProcessModule::CtbProcessModule(CDatabase* pdb)
 	m_Description = "";
 	m_ProductionLineName = "";
 	m_ProductionLineId = 0;
-	m_nFields = 9;
+	m_SortIndex = 0;
+	m_nFields = 10;
 	m_nDefaultType = dynaset;
 }
 //#error 安全问题：连接字符串可能包含密码。
@@ -55,6 +56,7 @@ void CtbProcessModule::DoFieldExchange(CFieldExchange* pFX)
 	RFX_Text(pFX, _T("[Description]"), m_Description);
 	RFX_Text(pFX, _T("[ProductionLineName]"), m_ProductionLineName);
 	RFX_Long(pFX, _T("[ProductionLineId]"), m_ProductionLineId);
+	RFX_Long(pFX, _T("[SortIndex]"), m_SortIndex);
 
 }
 /////////////////////////////////////////////////////////////////////////////

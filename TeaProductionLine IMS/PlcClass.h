@@ -17,5 +17,6 @@ public:
 	int m_ReadLength;
 	int m_WriteStartAddr;
 	int m_WriteLength;
+	int m_SortIndex;
 };
 

@@ -2,7 +2,7 @@
 
 #pragma once
 
-// 代码生成在 2015年7月26日 星期日, 11:25
+// 代码生成在 2015年7月29日 星期三, 20:10
 
 class CtbVideo : public CRecordset
 {
@@ -30,7 +30,8 @@ public:
 	long	m_ProductionLineId;
 	CStringA	m_Description;
 	CStringA	m_VideoName;
-	CStringA	m_strIPAddr;
+	CStringA	m_IPAddr;
+	long	m_SortIndex;
 
 // 重写
 	// 向导生成的虚函数重写
