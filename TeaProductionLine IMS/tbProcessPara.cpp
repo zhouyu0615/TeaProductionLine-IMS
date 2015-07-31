@@ -4,7 +4,7 @@
 
 // CtbProcessPara 实现
 
-// 代码生成在 2015年7月27日 星期一, 09:14
+// 代码生成在 2015年7月30日 星期四, 16:06
 
 #include "stdafx.h"
 #include "tbProcessPara.h"
@@ -23,10 +23,10 @@ CtbProcessPara::CtbProcessPara(CDatabase* pdb)
 	m_ProcessModuleName = "";
 	m_PlcName = "";
 	m_Description = "";
-	m_ParaValue = 0;
+	m_ParaValue = 0.0;
 	m_ParaName = "";
 	m_IsConfig = 0;
-	m_IsReadOnly = 0;
+	m_IsVisible = 0;
 	m_ValueType = 0;
 	m_AddressIndex = "";
 	m_AddressType = "";
@@ -64,10 +64,10 @@ void CtbProcessPara::DoFieldExchange(CFieldExchange* pFX)
 	RFX_Text(pFX, _T("[ProcessModuleName]"), m_ProcessModuleName);
 	RFX_Text(pFX, _T("[PlcName]"), m_PlcName);
 	RFX_Text(pFX, _T("[Description]"), m_Description);
-	RFX_Long(pFX, _T("[ParaValue]"), m_ParaValue);
+	RFX_Single(pFX, _T("[ParaValue]"), m_ParaValue);
 	RFX_Text(pFX, _T("[ParaName]"), m_ParaName);
 	RFX_Long(pFX, _T("[IsConfig]"), m_IsConfig);
-	RFX_Long(pFX, _T("[IsReadOnly]"), m_IsReadOnly);
+	RFX_Long(pFX, _T("[IsVisible]"), m_IsVisible);
 	RFX_Long(pFX, _T("[ValueType]"), m_ValueType);
 	RFX_Text(pFX, _T("[AddressIndex]"), m_AddressIndex);
 	RFX_Text(pFX, _T("[AddressType]"), m_AddressType);

@@ -1,5 +1,8 @@
 #pragma once
 #include "afxcmn.h"
+#include "afxwin.h"
+#include "DataProvider.h"
+#include "FaultPara.h"
 
 
 // CEditErrorParaTabDlg 对话框
@@ -14,6 +17,7 @@ public:
 
 // 对话框数据
 	enum { IDD = IDD_EDITERRORPARA_TABDLG };
+	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
@@ -21,4 +25,25 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CListCtrl m_list1;
+	CComboBox m_LineComboBox;
+	CComboBox m_ModuleComboBox;
+	CComboBox m_DeviceComboBox;
+	CComboBox m_PlcComboBox;
+	afx_msg void OnBnClickedAddItem();
+	afx_msg void OnBnClickedClearEdit();
+	afx_msg void OnBnClickedClearAllTabdlg();
+	CEdit m_NameEdit;
+	CEdit m_AddrIndexEdit;
+	CEdit m_DescriptionEdit;
+	afx_msg void OnCbnSelchangeLine();
+	afx_msg void OnCbnSelchangeModule();
+	virtual BOOL OnInitDialog();
+
+	int MyOnPaint();
+	int ListOnPaint();
+	int LineComboxPaint();
+	int ModuleComboxPaint(CString LineName);
+	int DeviceComboxPaint(CString LineName, CString ModuleName);
+	int PlcComboxPaint();
+	afx_msg void OnNMRClickLi1EditerrorparaTabdlg(NMHDR *pNMHDR, LRESULT *pResult);
 };

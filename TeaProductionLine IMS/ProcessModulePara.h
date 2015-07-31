@@ -16,7 +16,7 @@ public:
 	CString m_strProcessModuleName;
 	CString m_strPlcName;
 	CString m_strDescription;
-	int m_ParaValue;
+	float m_ParaValue;
 	CString m_strParaName;
 	int m_IsConfig;
 	int m_IsVisible;

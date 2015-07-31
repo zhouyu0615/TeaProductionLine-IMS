@@ -2,7 +2,7 @@
 
 #pragma once
 
-// 代码生成在 2015年7月27日 星期一, 09:14
+// 代码生成在 2015年7月30日 星期四, 16:06
 
 class CtbProcessPara : public CRecordset
 {
@@ -30,10 +30,10 @@ public:
 	CStringA	m_ProcessModuleName;
 	CStringA	m_PlcName;
 	CStringA	m_Description;
-	long	m_ParaValue;
+	float	m_ParaValue;
 	CStringA	m_ParaName;
 	long	m_IsConfig;
-	long	m_IsReadOnly;
+	long	m_IsVisible;
 	long	m_ValueType;
 	CStringA	m_AddressIndex;
 	CStringA	m_AddressType;

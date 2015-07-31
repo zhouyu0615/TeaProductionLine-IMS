@@ -571,7 +571,7 @@ void CDataProvider::AddDeviceParaToDatabase(CDevicePara tempDevicePara)
 	tempDevicePara.m_ProductionLineId = FindProLineId(tempDevicePara.m_strProductionLineName);
 	tempDevicePara.m_ProcessModuleId = FindProModuleId(tempDevicePara.m_strProductionLineName, tempDevicePara.m_strProcessModuleName);
 	tempDevicePara.m_PlcId = FindPlcId(tempDevicePara.m_strPlcName);
-
+	tempDevicePara.m_DeviceId = FindDeviceId(tempDevicePara.m_strProductionLineName, tempDevicePara.m_strProcessModuleName, tempDevicePara.m_strDeviceName);
 
 	m_vectDevicePara.push_back(tempDevicePara);
 
@@ -695,7 +695,6 @@ void CDataProvider::AddProcessParaToDatabase(CProcessPara tempProcessPara)
 	tempProcessPara.m_ProcessModuleId = FindProModuleId(tempProcessPara.m_strProductionLineName, tempProcessPara.m_strProcessModuleName);
 
 
-
 	m_vectProModulePara.push_back(tempProcessPara);
 
 	if (tbProcessPara.CanUpdate()){
@@ -718,7 +717,7 @@ void CDataProvider::AddProcessParaToDatabase(CProcessPara tempProcessPara)
 		tbProcessPara.m_Description = tempProcessPara.m_strDescription;
 		tbProcessPara.m_ValueType = tempProcessPara.m_ValueType;
 		tbProcessPara.m_IsConfig = tempProcessPara.m_IsConfig;
-		tbProcessPara.m_IsReadOnly = tempProcessPara.m_IsVisible;
+		tbProcessPara.m_IsVisible = tempProcessPara.m_IsVisible;
 
 		tbProcessPara.Update();
 
@@ -944,7 +943,7 @@ void CDataProvider::ReadProcessParaFromDatabase()
 		tempProcessPara.m_strDescription=tbProcessPara.m_Description;
 		tempProcessPara.m_ValueType=tbProcessPara.m_ValueType;
 		tempProcessPara.m_IsConfig=tbProcessPara.m_IsConfig;
-		tempProcessPara.m_IsVisible=tbProcessPara.m_IsReadOnly;
+		tempProcessPara.m_IsVisible=tbProcessPara.m_IsVisible;
 
 		m_vectProModulePara.push_back(tempProcessPara);
 		tbProcessPara.MoveNext();
@@ -1498,10 +1497,9 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 	CLoginUser tempLoginUser;
 	CDevicePara tempDevicePara;
 	CFaultPara tempFaultPara;
-	CProcessPara tempProModule;
+	CProcessPara tempProcessPara;
 	CStatePara tempStatePara;
-
-
+	int i=0;
 
 	switch (dbTable)
 	{
@@ -1513,7 +1511,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 		break;
 	case CDataProvider::tbProductionLine:
 
-		for (int i = 0; i < m_vectProductionLine.size(); i++)
+		for (i = 0; i < m_vectProductionLine.size(); i++)
 		{
 			if (Id == m_vectProductionLine[i].m_Id)
 			{
@@ -1530,7 +1528,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			Id);
 		break;
 	case CDataProvider::tbProcessModule:
-		for (int i = 0; i < m_vectProcessModule.size(); i++)
+		for (i = 0; i < m_vectProcessModule.size(); i++)
 		{
 			if (Id == m_vectProcessModule[i].m_Id)
 			{
@@ -1539,15 +1537,18 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			}
 
 		}
-		strsql.Format(_T("UPDATE tbProcessModule SET LastUpdatedDateTime=getdate(), ModuleName = '%s',ProductionLineName='%s',Description='%s',SortIndex='%d' WHERE Id = '%d'"),
+		tempModule.m_ProcessLineId = FindProLineId(tempModule.m_strProductionLineName);
+		m_vectProcessModule[i] = tempModule;
+		strsql.Format(_T("UPDATE tbProcessModule SET LastUpdatedDateTime=getdate(), ModuleName = '%s',ProductionLineName='%s',Description='%s',ProductionLineId='%d',SortIndex='%d' WHERE Id = '%d'"),
 			tempModule.m_strProcessModuleName, 
 			tempModule.m_strProductionLineName,
 			tempModule.m_strDescription,
+			tempModule.m_ProcessLineId,
 			tempModule.m_SortIndex,
 			Id);
 		break;
 	case CDataProvider::tbDevice:
-		for (int i = 0; i < m_vectDevice.size(); i++)
+		for (i = 0; i < m_vectDevice.size(); i++)
 		{
 			if (Id == m_vectDevice[i].m_Id)
 			{
@@ -1556,9 +1557,15 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			}
 
 		}
-		strsql.Format(_T("UPDATE tbDevice  SET LastUpdatedDateTime=getdate(), ProductionLineName='%s',ProcessModuleName = '%s',DeviceName='%s',DeviceType='%s',SortIndex='%d' WHERE Id = '%d'"),
+		tempDevice.m_ProductionLineId = FindProLineId(tempDevice.m_strProductionLineName);
+		tempDevice.m_ProcessModuleId = FindProModuleId(tempDevice.m_strProductionLineName,tempDevice.m_strProcessModuleName);
+		m_vectDevice[i] = tempDevice;
+
+		strsql.Format(_T("UPDATE tbDevice  SET LastUpdatedDateTime=getdate(), ProductionLineName='%s',ProcessModuleName = '%s',ProductionLineId='%d',ProcessModuleId='%d',DeviceName='%s',DeviceType='%s',SortIndex='%d' WHERE Id = '%d'"),
 			tempDevice.m_strProductionLineName,
 			tempDevice.m_strProcessModuleName,
+			tempDevice.m_ProductionLineId,
+			tempDevice.m_ProcessModuleId,
 			tempDevice.m_strDeviceName,
 			tempDevice.m_strDeviceType, 
 			tempDevice.m_SortIndex,
@@ -1566,7 +1573,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 
 		break;
 	case CDataProvider::tbPLc:
-		for (int i = 0; i < m_vectPlc.size(); i++)
+		for (i = 0; i < m_vectPlc.size(); i++)
 		{
 			if (Id == m_vectPlc[i].m_Id)
 			{
@@ -1587,7 +1594,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			Id);
 		break;
 	case CDataProvider::tbVideo:
-		for (int i = 0; i < m_vectVideo.size(); i++)
+		for (i = 0; i < m_vectVideo.size(); i++)
 		{
 			if (Id == m_vectVideo[i].m_Id)
 			{
@@ -1596,8 +1603,15 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			}
 
 		}
-		strsql.Format(_T("UPDATE tbVideo SET LastUpdatedDateTime=getdate(), ProductionLineName = '%s',ProcessModuleName='%s',VideoName='%s',IPAddr='%s',SortIndex='%d' WHERE Id = '%d'"),
-			tempVideo.m_strProductionLineName, tempVideo.m_strProcessModuleName,
+		tempVideo.m_ProductionLineId = FindProLineId(tempVideo.m_strProductionLineName);
+		tempVideo.m_ModuleId = FindProModuleId(tempVideo.m_strProductionLineName, tempVideo.m_strProcessModuleName);
+		m_vectVideo[i] = tempVideo;
+
+		strsql.Format(_T("UPDATE tbVideo SET LastUpdatedDateTime=getdate(), ProductionLineName = '%s',ProcessModuleName='%s',ProductionLineId='%d',ProcessModuleId='%d',VideoName='%s',IPAddr='%s',SortIndex='%d' WHERE Id = '%d'"),
+			tempVideo.m_strProductionLineName, 
+			tempVideo.m_strProcessModuleName,
+			tempVideo.m_ProductionLineId,
+			tempVideo.m_ModuleId,
 			tempVideo.m_strVideoName,
 			tempVideo.m_strIPAddr,
 			tempVideo.m_SortIndex,
@@ -1605,7 +1619,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 		break;
 
 	case CDataProvider::tbLoginUser:
-		for (int i = 0; i < m_vectLoginUser.size(); i++)
+		for (i = 0; i < m_vectLoginUser.size(); i++)
 		{
 			if (Id == m_vectLoginUser[i].m_Id)
 			{
@@ -1624,7 +1638,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 		break;
   
 	case CDataProvider::tbDevicePara:
-		for (int i = 0; i < m_vectDevicePara.size();i++)
+		for (i = 0; i < m_vectDevicePara.size();i++)
 		{
 			if (Id==m_vectDevicePara[i].m_Id)
 			{
@@ -1633,8 +1647,13 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			}
 
 		}
+		tempDevicePara.m_ProductionLineId = FindProLineId(tempDevicePara.m_strProductionLineName);
+		tempDevicePara.m_ProcessModuleId = FindProModuleId(tempDevicePara.m_strProductionLineName, tempDevicePara.m_strProcessModuleName);
+		tempDevicePara.m_DeviceId = FindDeviceId(tempDevicePara.m_strProductionLineName, tempDevicePara.m_strProcessModuleName, tempDevicePara.m_strDeviceName);
+		tempDevicePara.m_PlcId = FindPlcId(tempDevicePara.m_strPlcName);
+		m_vectDevicePara[i] = tempDevicePara;
 
-		strsql.Format(_T("UPDATE tbDevicePara SET LastUpdatedDateTime=getdate(), ProductionLineId='%d',ProcessModuleId='%d',PLCId='%d',DeviceId='%d',ProductionLineName='%s',ProcessModuleName=%s',PlcName='%s',DeviceName='%s',ParaName='%s',ControlValue='%d',StateValue='%d',ControlAddrIndex='%s',StateAddrIndex='%s',Description='%s' WHERE Id='%d'"),
+		strsql.Format(_T("UPDATE tbDevicePara SET LastUpdatedDateTime=getdate(), ProductionLineId='%d',ProcessModuleId='%d',PLCId='%d',DeviceId='%d',ProductionLineName='%s',ProcessModuleName='%s',PlcName='%s',DeviceName='%s',ParaName='%s',ControlValue='%d',StateValue='%d',ControlAddrIndex='%s',StateAddrIndex='%s',Description='%s' WHERE Id='%d'"),
 			tempDevicePara.m_ProductionLineId,
 			tempDevicePara.m_ProcessModuleId,
 			tempDevicePara.m_PlcId,
@@ -1653,7 +1672,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 		break;
 
 	case CDataProvider::tbFaultPara:
-		for (int i = 0; i < m_vectFaultPara.size(); i++)
+		for (i = 0; i < m_vectFaultPara.size(); i++)
 		{
 			if (Id == m_vectFaultPara[i].m_Id)
 			{
@@ -1662,26 +1681,90 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			}
 
 		}
+		tempFaultPara.m_ProductionLineId = FindProLineId(tempFaultPara.m_strProductionLineName);
+		tempFaultPara.m_ProcessModuleId = FindProModuleId(tempFaultPara.m_strProductionLineName, tempFaultPara.m_strProcessName);
+		tempFaultPara.m_DeviceId = FindDeviceId(tempDevicePara.m_strProductionLineName, tempFaultPara.m_strProcessName, tempFaultPara.m_strDeviceName);
+		tempFaultPara.m_PLCId = FindPlcId(tempFaultPara.m_strPlcName);
 
-		strsql.Format(_T("UPDATE tbFaultPara SET LastUpdatedDateTime=getdate(), ProductionLineId='%d',ProcessModuleId='%d',PLCId='%d',DeviceId='%d',ProductionLineName='%s',ProcessModuleName=%s',PlcName='%s',DeviceName='%s',ControlValue='%d',StateValue='%d',ControlAddrIndex='%s',StateAddrIndex='%s',Description='%s' WHERE Id='%d'"),
-			tempDevicePara.m_ProductionLineId,
-			tempDevicePara.m_ProcessModuleId,
-			tempDevicePara.m_PlcId,
-			tempDevicePara.m_DeviceId,
-			tempDevicePara.m_strProductionLineName,
-			tempDevicePara.m_strProcessModuleName,
-			tempDevicePara.m_strPlcName,
-			tempDevicePara.m_strDeviceName,
-			tempDevicePara.m_ControlValue,
-			tempDevicePara.m_StateValue,
-			tempDevicePara.m_strControlAddrIndex,
-			tempDevicePara.m_strStateAddrIndex,
-			tempDevicePara.m_strDescription,
+		m_vectFaultPara[i] = tempFaultPara;
+
+		strsql.Format(_T("UPDATE tbFaultPara SET LastUpdatedDateTime=getdate(), ProductionLineId='%d',ProcessModuleId='%d',PLCId='%d',DeviceId='%d',ProductionLineName='%s',ProcessModuleName='%s',PlcName='%s',DeviceName='%s',ParaName='%s',ParaValue='%d',AddressIndex='%s',Description='%s' WHERE Id='%d'"),
+			tempFaultPara.m_ProductionLineId,
+			tempFaultPara.m_ProcessModuleId,
+			tempFaultPara.m_PLCId,
+			tempFaultPara.m_DeviceId,
+			tempFaultPara.m_strProductionLineName,
+			tempFaultPara.m_strProcessName,
+			tempFaultPara.m_strPlcName,
+			tempFaultPara.m_strDeviceName,
+			tempFaultPara.m_strParaName,
+			tempFaultPara.m_ParaValue,
+			tempFaultPara.m_strAddressIndex,
+			tempFaultPara.m_strDescription,
 			Id);
 		break;
+	case tbProcessPara:
+		for (i = 0; i < m_vectProModulePara.size();i++)
+		{
+			if (Id==m_vectProModulePara[i].m_Id)
+			{
+				tempProcessPara = m_vectProModulePara[i];
+				break;
+			}
+		}
+		tempProcessPara.m_ProductionLineId = FindProLineId(tempProcessPara.m_strProductionLineName);
+		tempProcessPara.m_ProcessModuleId = FindProModuleId(tempProcessPara.m_strProductionLineName, tempProcessPara.m_strProcessModuleName);
+		tempProcessPara.m_PlcId = FindPlcId(tempProcessPara.m_strPlcName);
+		m_vectProModulePara[i] = tempProcessPara;
+
+		strsql.Format(_T("UPDATE tbProcessPara SET LastUpdatedDateTime=getdate(), ProductionLineId='%d',ProcessModuleId='%d',PLCId='%d',ProductionLineName='%s',ProcessModuleName='%s',PlcName='%s',ParaName='%s',ParaValue='%f',IsConfig='%d',IsVisible='%d',AddressIndex='%s',ValueType='%d',AddressType='%s',Description='%s' WHERE Id='%d'"),
+			tempProcessPara.m_ProductionLineId,
+			tempProcessPara.m_ProcessModuleId,
+			tempProcessPara.m_PlcId,
+			tempProcessPara.m_strProductionLineName,
+			tempProcessPara.m_strProcessModuleName,
+			tempProcessPara.m_strPlcName,
+			tempProcessPara.m_strParaName,
+			tempProcessPara.m_ParaValue,
+			tempProcessPara.m_IsConfig,
+			tempProcessPara.m_IsVisible,
+			tempProcessPara.m_strAddressIndex,
+			tempProcessPara.m_ValueType,
+			tempProcessPara.m_strAddressType,
+			tempProcessPara.m_strDescription,
+			Id);	
+		break;
+
+	case tbStatePara:
+		for (i = 0; i < m_vectStatePara.size(); i++)
+		{
+			if (Id == m_vectStatePara[i].m_Id)
+			{
+				tempStatePara = m_vectStatePara[i];
+				break;
+			}
+		}
+		tempStatePara.m_ProductionLineId = FindProLineId(tempStatePara.m_strProductionLineName);
+		tempStatePara.m_ProcessModuleId = FindProModuleId(tempStatePara.m_strProductionLineName, tempStatePara.m_strProcessModuleName);
+		tempStatePara.m_PlcId = FindPlcId(tempStatePara.m_strPlcName);
+		
+		m_vectStatePara[i] = tempStatePara;
+
+		strsql.Format(_T("UPDATE tbStatePara SET LastUpdatedDateTime=getdate(), ProductionLineId='%d',ProcessModuleId='%d',PLCId='%d',ProductionLineName='%s',ProcessModuleName='%s',PlcName='%s',ParaName='%s',ParaValue='%d',AddressIndex='%s',Description='%s' WHERE Id='%d'"),
+			tempStatePara.m_ProductionLineId,
+			tempStatePara.m_ProcessModuleId,
+			tempStatePara.m_PlcId,
+			tempStatePara.m_strProductionLineName,
+			tempStatePara.m_strProcessModuleName,
+			tempStatePara.m_strPlcName,
+			tempStatePara.m_strParaName,
+			tempStatePara.m_ParaValue,
+			tempStatePara.m_strAddressIndex,
+			tempStatePara.m_strDescription,
+			Id);
 
 
-
+		break;
 	default:
 		break;
 	}
