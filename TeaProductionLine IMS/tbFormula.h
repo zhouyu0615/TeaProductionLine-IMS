@@ -1,14 +1,14 @@
-// tbProcessPara.h : CtbProcessPara 的声明
+// tbFormula.h : CtbFormula 的声明
 
 #pragma once
 
-// 代码生成在 2015年7月31日 星期五, 15:14
+// 代码生成在 2015年8月1日 星期六, 08:12
 
-class CtbProcessPara : public CRecordset
+class CtbFormula : public CRecordset
 {
 public:
-	CtbProcessPara(CDatabase* pDatabase = NULL);
-	DECLARE_DYNAMIC(CtbProcessPara)
+	CtbFormula(CDatabase* pDatabase = NULL);
+	DECLARE_DYNAMIC(CtbFormula)
 
 // 字段/参数数据
 
@@ -21,24 +21,19 @@ public:
 // 以同时支持 Unicode 和这些转换)。
 
 	long	m_Id;
-	CTime	m_CreatedDateTime;
-	CTime	m_LastUpdatedDateTime;
-	long	m_PLCId;
-	long	m_ProcessModuleId;
+	CStringA	m_FormulaName;
+	long	m_FormulaId;
 	long	m_ProductionLineId;
 	CStringA	m_ProductionLineName;
-	CStringA	m_ProcessModuleName;
-	CStringA	m_PlcName;
-	CStringA	m_Description;
-	float	m_ParaValue;
-	CStringA	m_ParaName;
-	long	m_IsConfig;
-	long	m_IsVisible;
-	long	m_ValueType;
-	CStringA	m_ReadAddressIndex;
-	CStringA	m_AddressType;
-	CStringA	m_WriteAddressIndex;
-	CStringA	m_Units;
+	long	m_ProcessParaId;
+	CStringA	m_ProcessParaName;
+	float	m_DefaultValue;
+	CStringA	m_ParaValueUnit;
+	CStringA	m_Note;
+	CTime	m_CreatedDateTime;
+	CTime	m_LastUpdatedDateTime;
+	long	m_IsDefaultFormula;
+	long	m_IsCurrentFormula;
 
 // 重写
 	// 向导生成的虚函数重写

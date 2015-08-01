@@ -3,6 +3,7 @@
 #include "afxwin.h"
 #include "DataProvider.h"
 #include "FaultPara.h"
+#include "EditErrorParaPopDlg.h"
 
 
 // CEditErrorParaTabDlg 对话框
@@ -17,7 +18,10 @@ public:
 
 // 对话框数据
 	enum { IDD = IDD_EDITERRORPARA_TABDLG };
+	int m_nSelectedItem;
 	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
+
+	CEditErrorParaPopDlg m_FaultParaPopDlg;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持

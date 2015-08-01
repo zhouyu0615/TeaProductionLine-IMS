@@ -82,13 +82,14 @@ void CEditErrorParaTabDlg::OnBnClickedClearEdit()
 void CEditErrorParaTabDlg::OnBnClickedClearAllTabdlg()
 {
 	// TODO:  在此添加控件通知处理程序代码
-	int nResult = MessageBox(_T("该操作将删除所有的设备参数，是否继续当前操作？"), _T("警告"), MB_ICONEXCLAMATION | MB_YESNO);//警告//
+	int nResult = MessageBox(_T("该操作将删除所有的故障参数，是否继续当前操作？"), _T("警告"), MB_ICONEXCLAMATION | MB_YESNO);//警告//
 	if (nResult == IDYES)
 	{
 		m_pDataProvider->m_vectFaultPara.clear();
 		m_pDataProvider->DeleteDbTable(CDataProvider::tbFaultPara);
+		OnBnClickedClearEdit();
 	}
-	OnBnClickedClearEdit();
+
 	ListOnPaint();
 }
 
@@ -225,7 +226,7 @@ int CEditErrorParaTabDlg::ListOnPaint()
 	m_list1.InsertColumn(5, _T("所属PLC"), LVCFMT_CENTER, rect1.Width() / 15 * 2, -1);
 	m_list1.InsertColumn(6, _T("参数名称"), LVCFMT_CENTER, rect1.Width() / 15 * 2, -1);
 	m_list1.InsertColumn(7, _T("参数地址"), LVCFMT_CENTER, rect1.Width() / 15 * 2, -1);
-	m_list1.InsertColumn(8, _T("备注"), LVCFMT_CENTER, rect1.Width() / 17 * 5, -1);
+	m_list1.InsertColumn(8, _T("备注"), LVCFMT_CENTER, rect1.Width() / 15 * 2, -1);
 	//填写表单内容//
 	int length = m_pDataProvider->m_vectFaultPara.size();
 	for (int i = 0; i < length; i++)
@@ -255,8 +256,39 @@ void CEditErrorParaTabDlg::OnNMRClickLi1EditerrorparaTabdlg(NMHDR *pNMHDR, LRESU
 	// TODO:  在此添加控件通知处理程序代码
 	*pResult = 0;
 
+	m_nSelectedItem = -1;
+	LPNMITEMACTIVATE lpNMItemActivate = (LPNMITEMACTIVATE)pNMHDR;
+	if (lpNMItemActivate != NULL)
+	{
+		m_nSelectedItem = lpNMItemActivate->iItem;
+	}
+	if (m_nSelectedItem == -1)
+	{
+		return;
+	}
+	m_list1.SetItemState(m_nSelectedItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 
+	CMenu menu, *pSubMenu;
+	menu.LoadMenu(IDR_INITPARADLG_POP_MENU1);
+	pSubMenu = menu.GetSubMenu(0);
+	CPoint point1;        //存储鼠标位置的临时变量//
+	GetCursorPos(&point1);//得到光标处//
+	UINT nItem1 = pSubMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RETURNCMD | TPM_TOPALIGN, point1.x, point1.y, GetParent());//确保右键点击在哪菜单出现在哪，并返回所选的菜单项//
 
+	switch (nItem1)
+	{
+	case ID_PARA_MODIFY:  //右键菜单：修改//
+		m_FaultParaPopDlg.m_nSelectedItem = m_nSelectedItem;
+		m_FaultParaPopDlg.DoModal();
+		break;
+	case ID_PARA_DELETE:
+		m_pDataProvider->DeleteDbTableItem(CDataProvider::tbFaultPara, m_pDataProvider->m_vectFaultPara[m_nSelectedItem].m_Id);
+		m_pDataProvider->m_vectFaultPara.erase(m_pDataProvider->m_vectFaultPara.begin() + m_nSelectedItem);
+		break;
+	default:
+		break;
+	}
 
+	ListOnPaint();
 
 }

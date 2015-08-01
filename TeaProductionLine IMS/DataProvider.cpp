@@ -68,6 +68,7 @@ void CDataProvider::InitDataProvider()
 	this->ReadProcessParaFromDatabase();
 	this->ReadFaultParaFromDatabase();
 	this->ReadStateParaFromDatabase();
+	this->ReadFormulaFormDatabase();
 }
 
 
@@ -135,6 +136,29 @@ int CDataProvider::FindDeviceId(CString ProductionLineName, CString ModuleName, 
 	return 0;
 }
 
+int CDataProvider::FindProcessParaId(CString ProcessParaName)
+{
+	for (int i = 0; i < m_vectProModulePara.size(); i++)
+	{
+		if (ProcessParaName == m_vectProModulePara[i].m_strParaName)
+		{
+			return m_vectProModulePara[i].m_Id;
+		}
+	}
+	return 0;
+}
+
+CString CDataProvider::FindProcessParaName(int ProcessParaId)
+{
+	for (int i = 0; i < m_vectProModulePara.size(); i++)
+	{
+		if (ProcessParaId == m_vectProModulePara[i].m_strParaName)
+		{
+			return m_vectProModulePara[i].m_strParaName;
+		}
+	}
+	return _T("");
+}
 
 
 void CDataProvider::AddLoginUserToDatabase(CLoginUser tempLoginUser)
@@ -710,7 +734,9 @@ void CDataProvider::AddProcessParaToDatabase(CProcessPara tempProcessPara)
 		tbProcessPara.m_ProcessModuleId = tempProcessPara.m_ProcessModuleId;
 		tbProcessPara.m_PlcName = tempProcessPara.m_strPlcName;
 		tbProcessPara.m_PLCId = tempProcessPara.m_PlcId;
-		tbProcessPara.m_AddressIndex = tempProcessPara.m_strAddressIndex;
+		tbProcessPara.m_ReadAddressIndex = tempProcessPara.m_strReadAddrIndex;
+		tbProcessPara.m_WriteAddressIndex = tempProcessPara.m_strWriteAddrIndex;
+		tbProcessPara.m_Units = tempProcessPara.m_strUnit;
 		tbProcessPara.m_AddressType = tempProcessPara.m_strAddressType;
 		tbProcessPara.m_ParaValue = tempProcessPara.m_ParaValue;
 		tbProcessPara.m_ParaName = tempProcessPara.m_strParaName;
@@ -741,8 +767,6 @@ void CDataProvider::AddStateParaToDatabase(CStatePara tempStatePara)
 	catch (CDBException *e){
 		e->ReportError();
 	}
-
-
 	int length = m_vectStatePara.size();
 	if (length == 0)//设置第一个模块ID
 	{
@@ -787,6 +811,80 @@ void CDataProvider::AddStateParaToDatabase(CStatePara tempStatePara)
 
 }
 
+
+void CDataProvider::AddFormulaToDatabase(CFormulaClass tempFormula)
+{
+	CtbFormula tbFormula;
+	try{
+		if (tbFormula.IsOpen())
+			tbFormula.Close();
+		if (!tbFormula.Open(CRecordset::dynaset)){
+			AfxMessageBox(_T("打开数据库失败！"));
+			return;
+		}
+	}
+	catch (CDBException *e){
+		e->ReportError();
+	}
+	int length = m_vectFormula.size();
+	if (length == 0)//设置第一个模块ID
+	{
+		tempFormula.m_Id = 1000;
+		
+	}
+	else{
+		tempFormula.m_Id = m_vectStatePara[length - 1].m_Id + 1;		
+	}
+
+	tempFormula.m_FormulaId = FindFormulaId(tempFormula.m_strFormulaName);
+	tempFormula.m_ProductionLineId = FindProLineId(tempFormula.m_strProductionLineName);
+	tempFormula.m_strProcessParaName = FindProcessParaName(tempFormula.m_ProcessParaId);
+
+	m_vectFormula.push_back(tempFormula);
+	if (tbFormula.CanUpdate()){
+		tbFormula.AddNew();
+		CTime time = CTime::GetCurrentTime();
+		tbFormula.m_Id = tempFormula.m_Id;
+		tbFormula.m_CreatedDateTime = time;
+		tbFormula.m_LastUpdatedDateTime = time;
+		tbFormula.m_ProductionLineName = tempFormula.m_strProductionLineName;
+		tbFormula.m_ProductionLineId = tempFormula.m_ProductionLineId;
+		tbFormula.m_FormulaId = tempFormula.m_FormulaId;
+		tbFormula.m_FormulaName = tempFormula.m_strFormulaName;
+		tbFormula.m_Note = tempFormula.m_strNote;
+		tbFormula.m_ParaValueUnit = tempFormula.m_strParaValueUnit;
+		tbFormula.m_DefaultValue = tempFormula.m_DefaultValue;
+		tbFormula.m_ProcessParaId = tempFormula.m_FormulaId;
+		tbFormula.m_ProcessParaName = tempFormula.m_strProcessParaName;
+		tbFormula.m_IsDefaultFormula = tempFormula.m_IsDefaultFormula;
+		tbFormula.m_IsCurrentFormula = tempFormula.m_IsCurrentFormula;
+		tbFormula.Update();
+	}
+
+	tbFormula.Close();
+}
+
+//如果为第一个配方的第一条记录，则分配FormulaID为1000，若存在同一个配方，则返回同一配方的ID
+//若为新建配方，则另外分配一个FormulaID
+int CDataProvider::FindFormulaId(CString FormulaName)
+{
+	int len = m_vectFormula.size();
+	if(len==0)
+	{
+		return 1000;
+	}
+	else{
+	
+		for (int i = 0; i < m_vectFormula.size(); i++)
+		{
+			if (FormulaName == m_vectFormula[i].m_strFormulaName)
+			{
+				return m_vectFormula[i].m_FormulaId;
+			}
+		}
+		return m_vectFormula[len - 1].m_FormulaId + 1;
+	}
+}
 
 void CDataProvider::ReadDeviceParaFromDatabase()
 {
@@ -833,8 +931,6 @@ void CDataProvider::ReadDeviceParaFromDatabase()
 		tempDevicePara.m_strStateAddrIndex=tbDevicePara.m_StateAddrIndex;
 		tempDevicePara.m_strParaName=tbDevicePara.m_ParaName;
 		tempDevicePara.m_strDescription=tbDevicePara.m_Description;
-
-
 
 		m_vectDevicePara.push_back(tempDevicePara);
 		tbDevicePara.MoveNext();
@@ -936,7 +1032,9 @@ void CDataProvider::ReadProcessParaFromDatabase()
 		tempProcessPara.m_ProcessModuleId=tbProcessPara.m_ProcessModuleId;
 		tempProcessPara.m_strPlcName=tbProcessPara.m_PlcName;
 		tempProcessPara.m_PlcId=tbProcessPara.m_PLCId;
-		tempProcessPara.m_strAddressIndex=tbProcessPara.m_AddressIndex;
+		tempProcessPara.m_strReadAddrIndex=tbProcessPara.m_ReadAddressIndex;
+		tempProcessPara.m_strWriteAddrIndex = tbProcessPara.m_WriteAddressIndex;
+		tempProcessPara.m_strUnit = tbProcessPara.m_Units;
 		tempProcessPara.m_strAddressType=tbProcessPara.m_AddressType;
 		tempProcessPara.m_ParaValue=tbProcessPara.m_ParaValue;
 		tempProcessPara.m_strParaName=tbProcessPara.m_ParaName;
@@ -1338,6 +1436,59 @@ void CDataProvider::ReadVideoFromDatabase()
 
 }
 
+void CDataProvider::ReadFormulaFormDatabase()
+{
+	CString strsql;
+	strsql.Format(_T("select * from tbFormula order by Id"));
+
+	CtbFormula  tbFormula;
+	try{
+		if (tbFormula.IsOpen())
+			tbFormula.Close();
+		if (!tbFormula.Open(CRecordset::dynaset, strsql)){
+			AfxMessageBox(_T("打开数据库失败！"));
+			return;
+		}
+	}
+	catch (CDBException *e){
+		e->ReportError();
+	}
+
+	if (tbFormula.IsEOF())
+	{
+		tbFormula.Close();
+		return;
+	}
+
+	m_vectFormula.clear();
+	CFormulaClass tempFormula;
+	tbFormula.MoveFirst();
+	while (!tbFormula.IsEOF()){
+
+		tempFormula.m_Id = tbFormula.m_Id;
+
+		tempFormula.m_strProductionLineName = tbFormula.m_ProductionLineName ;
+		tempFormula.m_ProductionLineId = tbFormula.m_ProductionLineId ;
+		tempFormula.m_FormulaId = tbFormula.m_FormulaId ;
+		tempFormula.m_strFormulaName = tbFormula.m_FormulaName;
+		tempFormula.m_strNote = tbFormula.m_Note;
+		tempFormula.m_strParaValueUnit = tbFormula.m_ParaValueUnit ;
+		tempFormula.m_DefaultValue = tbFormula.m_DefaultValue;
+		tempFormula.m_FormulaId = tbFormula.m_ProcessParaId;
+		tempFormula.m_strProcessParaName = tbFormula.m_ProcessParaName;
+
+		tempFormula.m_IsDefaultFormula = tbFormula.m_IsDefaultFormula;
+		tempFormula.m_IsCurrentFormula = tbFormula.m_IsCurrentFormula ;
+
+		m_vectFormula.push_back(tempFormula);
+		tbFormula.MoveNext();
+	}
+
+	tbFormula.Close();
+}
+
+
+
 /*函数功能：删除枚举类型dbTable类型中提供的各表的所有列
 举例：DeleteDbTable(tbProductionLine)删除生产线表格所包含的所有的列
 */
@@ -1388,7 +1539,7 @@ int CDataProvider::DeleteDbTable(enumDBTABLE dbTable)
 		strsql.Format(_T("DELETE FROM tbProcessPara"));
 		m_vectProModulePara.clear();
 		break;
-	case CDataProvider::tbStatePara:
+	case CDataProvider::tbFormula:
 		strsql.Format(_T("DELETE FROM tbStatePara"));
 		m_vectStatePara.clear();
 		break;
@@ -1441,7 +1592,6 @@ int CDataProvider::DeleteDbTable(enumDBTABLE dbTable)
 	case CDataProvider::tbVideo:
 		strsql.Format(_T("DELETE FROM tbVideo WHERE Id = '%d'"), Id);
 		break;
-
 	case CDataProvider::tbLoginUser:
 		strsql.Format(_T("DELETE FROM tbLoginUser WHERE Id = '%d'"), Id);
 		break;
@@ -1456,6 +1606,9 @@ int CDataProvider::DeleteDbTable(enumDBTABLE dbTable)
 		break;
 	case CDataProvider::tbStatePara:
 		strsql.Format(_T("DELETE FROM tbStatePara WHERE Id = '%d'"), Id);
+		break;
+	case CDataProvider::tbFormula:
+		strsql.Format(_T("DELETE FROM tbFormula WHERE Id = '%d'"), Id);
 		break;
 	default:
 		break;
@@ -1499,6 +1652,8 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 	CFaultPara tempFaultPara;
 	CProcessPara tempProcessPara;
 	CStatePara tempStatePara;
+	CFormulaClass tempFormula;
+
 	int i=0;
 
 	switch (dbTable)
@@ -1717,7 +1872,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 		tempProcessPara.m_PlcId = FindPlcId(tempProcessPara.m_strPlcName);
 		m_vectProModulePara[i] = tempProcessPara;
 
-		strsql.Format(_T("UPDATE tbProcessPara SET LastUpdatedDateTime=getdate(), ProductionLineId='%d',ProcessModuleId='%d',PLCId='%d',ProductionLineName='%s',ProcessModuleName='%s',PlcName='%s',ParaName='%s',ParaValue='%f',IsConfig='%d',IsVisible='%d',AddressIndex='%s',ValueType='%d',AddressType='%s',Description='%s' WHERE Id='%d'"),
+		strsql.Format(_T("UPDATE tbProcessPara SET LastUpdatedDateTime=getdate(), ProductionLineId='%d',ProcessModuleId='%d',PLCId='%d',ProductionLineName='%s',ProcessModuleName='%s',PlcName='%s',ParaName='%s',ParaValue='%f',IsConfig='%d',IsVisible='%d',ReadAddressIndex='%s',WriteAddressIndex='%s',Units='%s',ValueType='%d',AddressType='%s',Description='%s' WHERE Id='%d'"),
 			tempProcessPara.m_ProductionLineId,
 			tempProcessPara.m_ProcessModuleId,
 			tempProcessPara.m_PlcId,
@@ -1728,7 +1883,9 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			tempProcessPara.m_ParaValue,
 			tempProcessPara.m_IsConfig,
 			tempProcessPara.m_IsVisible,
-			tempProcessPara.m_strAddressIndex,
+			tempProcessPara.m_strReadAddrIndex,
+			tempProcessPara.m_strWriteAddrIndex,
+			tempProcessPara.m_strUnit,
 			tempProcessPara.m_ValueType,
 			tempProcessPara.m_strAddressType,
 			tempProcessPara.m_strDescription,
@@ -1762,7 +1919,36 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			tempStatePara.m_strAddressIndex,
 			tempStatePara.m_strDescription,
 			Id);
+	case tbFormula:
+		for (i = 0; i < m_vectFormula.size(); i++)
+		{
+			if (Id == m_vectFormula[i].m_Id)
+			{
+				tempFormula = m_vectFormula[i];
+				break;
+			}
+		}
+		tempFormula.m_ProductionLineId = FindProLineId(tempStatePara.m_strProductionLineName);
 
+		tempFormula.m_FormulaId = FindFormulaId(tempFormula.m_strFormulaName);
+		tempFormula.m_strProcessParaName = FindProcessParaName(tempFormula.m_ProcessParaId);
+
+		m_vectFormula[i] = tempFormula;
+
+		strsql.Format(_T("UPDATE tbFormula SET LastUpdatedDateTime=getdate(), ProductionLineId='%d',ProductionLineName='%s',FormulaName='%s',FormulaId='%d',ProcessParaId='%d',ProcessParaName='%s',ParaValueUnit='%s',Note='%s',DefaultValue='%d',IsDefaultFormula='%d',IsCurrentFormula='%d'WHERE Id='%d'"),
+			tempFormula.m_ProductionLineId,	
+			tempFormula.m_strProductionLineName,
+			tempFormula.m_strFormulaName,
+			tempFormula.m_FormulaId,
+			tempFormula.m_ProcessParaId,
+			tempFormula.m_strProcessParaName,
+			tempFormula.m_strParaValueUnit,
+			tempFormula.m_strNote,
+			tempFormula.m_DefaultValue,
+			tempFormula.m_IsDefaultFormula,
+			tempFormula.m_IsCurrentFormula,
+			Id);
+		break;
 
 		break;
 	default:
@@ -2062,7 +2248,6 @@ int CDataProvider::UpdateRelatedToModule(int ModuleId, CString modifyModuleName)
 			UpdateTableItem(tbStatePara, m_vectStatePara[i].m_Id);
 		}
 	}
-
 	//修改设备参数//
 	for (int i = 0; i < m_vectDevicePara.size(); i++)
 	{
@@ -2073,7 +2258,6 @@ int CDataProvider::UpdateRelatedToModule(int ModuleId, CString modifyModuleName)
 			UpdateTableItem(tbDevicePara, m_vectDevicePara[i].m_Id);
 		}
 	}
-
 	return 0;
 }
 

@@ -16,14 +16,63 @@ CProcessPara::CProcessPara()
 	m_IsConfig = 0;
 	m_IsVisible = 0;
 	m_ValueType = 0;
-	m_strAddressIndex = _T("");
+	m_strReadAddrIndex = _T("");
 	m_strAddressType = _T("");
 	m_PlcId = 0;
 	m_strCreatedDateTime = _T("");
 	m_strLastUpdatedDateTime = _T("");
+	m_strUnit = _T("");
+	m_strWriteAddrIndex = _T("");
 }
 
 
 CProcessPara::~CProcessPara()
 {
+}
+
+CString CProcessPara::ConvertValTypeToString()
+{
+	switch (m_ValueType)
+	{
+	case VALUETYPE_BOOL:
+		return _T("Bool");
+	case VALUETYPE_BYTE:
+		return _T("Byte");
+	case VALUETYPE_SHORT:
+		return _T("Short");
+	case VALUETYPE_LONG:
+		return _T("Long");
+	case VALUETYPE_FLOAT:
+		return _T("Float");
+	case VALUETYPE_DOUBLE:
+		return _T("Double");
+	default:
+		return _T("Null");
+	}
+
+}
+
+CString CProcessPara::ConvertIsConfigToString()
+{
+	if (m_IsConfig)
+	{
+		return _T("ÊÇ");
+	}
+	else
+	{
+		return _T("·ñ");
+	}
+}
+
+
+CString CProcessPara::ConvertIsVisibleToString()
+{
+	if (m_IsVisible)
+	{
+		return _T("ÊÇ");
+	}
+	else
+	{
+		return _T("·ñ");
+	}
 }

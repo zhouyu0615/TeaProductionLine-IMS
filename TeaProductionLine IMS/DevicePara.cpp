@@ -27,3 +27,4 @@ CDevicePara::CDevicePara()
 CDevicePara::~CDevicePara()
 {
 }
+

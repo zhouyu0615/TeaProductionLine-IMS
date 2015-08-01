@@ -131,6 +131,7 @@
     <ClInclude Include="EditUserPopDlg.h" />
     <ClInclude Include="EditVedioPopDlg.h" />
     <ClInclude Include="FaultPara.h" />
+    <ClInclude Include="FormulaClass.h" />
     <ClInclude Include="InitDlg.h" />
     <ClInclude Include="LoginDlg.h" />
     <ClInclude Include="LoginUser.h" />
@@ -146,6 +147,7 @@
     <ClInclude Include="tbDevice.h" />
     <ClInclude Include="tbDevicePara.h" />
     <ClInclude Include="tbFaultPara.h" />
+    <ClInclude Include="tbFormula.h" />
     <ClInclude Include="tbLoginUser.h" />
     <ClInclude Include="tbPLc.h" />
     <ClInclude Include="tbProcessModule.h" />
@@ -185,6 +187,7 @@
     <ClCompile Include="EditUserPopDlg.cpp" />
     <ClCompile Include="EditVedioPopDlg.cpp" />
     <ClCompile Include="FaultPara.cpp" />
+    <ClCompile Include="FormulaClass.cpp" />
     <ClCompile Include="InitDlg.cpp" />
     <ClCompile Include="LoginDlg.cpp" />
     <ClCompile Include="LoginUser.cpp" />
@@ -201,6 +204,7 @@
     <ClCompile Include="tbDevice.cpp" />
     <ClCompile Include="tbDevicePara.cpp" />
     <ClCompile Include="tbFaultPara.cpp" />
+    <ClCompile Include="tbFormula.cpp" />
     <ClCompile Include="tbLoginUser.cpp" />
     <ClCompile Include="tbPLc.cpp" />
     <ClCompile Include="tbProcessModule.cpp" />

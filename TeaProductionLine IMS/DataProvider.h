@@ -12,6 +12,8 @@
 #include "FaultPara.h"
 #include "DevicePara.h"
 #include "ProcessModulePara.h"
+#include "FormulaClass.h"
+#include "tbFormula.h"
 
 
 
@@ -28,7 +30,7 @@ private:
 
 	static CDataProvider *Instance;
 	
-
+	
 
 public:
 
@@ -40,7 +42,7 @@ public:
 
 	enum enumDBTABLE {	tbUser, tbProductionLine, tbProcessModule,
 		tbDevice, tbPLc, tbVideo, tbLoginUser, tbFaultPara,
-		tbProcessPara, tbStatePara, tbDevicePara};
+		tbProcessPara, tbStatePara, tbDevicePara, tbFormula	};
 
 	std::vector<CLoginUser> m_vectLoginUser;
 
@@ -55,6 +57,8 @@ public:
 	std::vector<CFaultPara> m_vectFaultPara;
 	std::vector<CProcessPara> m_vectProModulePara;
 	std::vector<CDevicePara>  m_vectDevicePara;
+
+	std::vector<CFormulaClass> m_vectFormula; //配方表//
 
 
 
@@ -107,6 +111,10 @@ public:
 	void ReadStateParaFromDatabase();
 	void AddStateParaToDatabase(CStatePara tempStatePara);
 
+	void ReadFormulaFormDatabase();
+	void AddFormulaToDatabase(CFormulaClass tempFormula);
+
+
 	int UpdateTableItem(enumDBTABLE dbTable, int Id);
 
 	int DeleteDbTable(enumDBTABLE dbTable);
@@ -132,6 +140,9 @@ public:
 	int FindPlcId(CString PlcName);
 	int FindDeviceId(CString ProductionLineName, CString ModuleName, CString DeviceName);
 
+	int FindFormulaId(CString FormulaName);
+	int FindProcessParaId(CString ProcessPara);
+	CString FindProcessParaName(int ProcessParaId);
 
 	//作为Search Device,PlcPara,Video 方法临时存储的中间容器
 	std::vector<CDeviceClass> m_vTempDevice;

@@ -1,4 +1,7 @@
 #pragma once
+#include "afxwin.h"
+#include "DataProvider.h"
+#include "StatePara.h"
 
 
 // CEditStateParaPopDlg 对话框
@@ -13,9 +16,24 @@ public:
 
 // 对话框数据
 	enum { IDD = IDD_EDITSTATEPARA_POPDLG };
+	int m_nSelectedItem;
+	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnCbnSelchangeLine();
+	CComboBox m_LineComboBox;
+	CComboBox m_ModuleComboBox;
+	CComboBox m_PlcComboBox;
+	CEdit m_NameEdit;
+	CEdit m_AddrIndexEdit;
+	CEdit m_NoteEdit;
+	afx_msg void OnBnClickedOk();
+	virtual BOOL OnInitDialog();
+
+	int LineComboxPaint();
+	int ModuleComboxPaint(CString LineName);
 };

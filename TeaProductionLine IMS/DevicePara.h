@@ -1,6 +1,7 @@
 #pragma once
 class CDevicePara
 {
+private:
 public:
 	CDevicePara();
 	~CDevicePara();
@@ -21,5 +22,7 @@ public:
 	CString m_strStateAddrIndex;
 	CString m_strDescription;
 	CString m_strParaName;
+
+
 };
 

@@ -1080,7 +1080,6 @@ int CInitDlg::MoveDownItem()
 int CInitDlg::DeleteListItem(int nItem)
 {
 	int nResult;
-	int strKey;
 	std::vector<CProductionLineClass>::iterator pProlineIter;
 	std::vector<CProcessModuleClass>::iterator  pModuleIter;
 	std::vector<CDeviceClass>::iterator        pDeviceIter;

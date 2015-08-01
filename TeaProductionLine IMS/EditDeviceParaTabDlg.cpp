@@ -63,8 +63,11 @@ void CEditDeviceParaTabDlg::OnBnClickedAddItem()
 	m_StateAddrEdit.GetWindowText(tempDevicePara.m_strStateAddrIndex);
 	m_DescriptionEdit.GetWindowText(tempDevicePara.m_strDescription);
 
-	m_pDataProvider->AddDeviceParaToDatabase(tempDevicePara);
-
+	if (DeviceParaCheck(tempDevicePara) == 0) //参数名的检查通过
+	{
+		m_pDataProvider->AddDeviceParaToDatabase(tempDevicePara);
+	}
+	
 	ListOnPaint();
 }
 
@@ -86,9 +89,10 @@ void CEditDeviceParaTabDlg::OnBnClickedClearAll()
 	{
 		m_pDataProvider->m_vectDevicePara.clear();
 		m_pDataProvider->DeleteDbTable(CDataProvider::tbDevicePara);
+		OnBnClickedClearEdit();
+		ListOnPaint();
 	}
-	OnBnClickedClearEdit();
-	ListOnPaint();
+
 }
 
 
@@ -271,7 +275,6 @@ void CEditDeviceParaTabDlg::OnNMRClickLi1EditdeviceparaTabdlg(NMHDR *pNMHDR, LRE
 	GetCursorPos(&point1);//得到光标处//
 	UINT nItem1 = pSubMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RETURNCMD | TPM_TOPALIGN, point1.x, point1.y, GetParent());//确保右键点击在哪菜单出现在哪，并返回所选的菜单项//
 	
-
 	switch (nItem1)
 	{
 	case ID_PARA_MODIFY:  //右键菜单：修改//
@@ -279,7 +282,8 @@ void CEditDeviceParaTabDlg::OnNMRClickLi1EditdeviceparaTabdlg(NMHDR *pNMHDR, LRE
 		m_DeviceParaDlg.DoModal();
 		break;
 	case ID_PARA_DELETE:
-
+		m_pDataProvider->DeleteDbTableItem(CDataProvider::tbDevicePara, m_pDataProvider->m_vectDevicePara[m_nSelectedItem].m_Id);		
+		m_pDataProvider->m_vectDevicePara.erase(m_pDataProvider->m_vectDevicePara.begin() + m_nSelectedItem);
 		break;
 	default:
 		break;
@@ -287,5 +291,25 @@ void CEditDeviceParaTabDlg::OnNMRClickLi1EditdeviceparaTabdlg(NMHDR *pNMHDR, LRE
 
 	ListOnPaint();
 
+}
 
+
+//检查通过返回0.不通过返回1
+int CEditDeviceParaTabDlg::DeviceParaCheck(CDevicePara &tempDevicePara)
+{
+	if (tempDevicePara.m_strParaName.IsEmpty())
+	{
+		AfxMessageBox(_T("参数名为空,不能添加"));
+		return 1;
+	}
+	for (int i = 0; i < m_pDataProvider->m_vectDevicePara.size(); i++)
+	{
+		if ((tempDevicePara.m_strProductionLineName == m_pDataProvider->m_vectDevicePara[i].m_strProductionLineName) && (tempDevicePara.m_strProcessModuleName == m_pDataProvider->m_vectDevicePara[i].m_strProcessModuleName) && (tempDevicePara.m_strDeviceName == m_pDataProvider->m_vectDevicePara[i].m_strDeviceName))
+		{
+			AfxMessageBox(_T("同一生产线下同一模块的同一设备下已经存在同名参数，请改变参数名字"));
+			return 1;
+		}
+
+	}
+	return 0;
 }

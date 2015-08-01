@@ -4,8 +4,14 @@ class CProcessPara
 public:
 	CProcessPara();
 	~CProcessPara();
-	enum enumValueType {
-		EM_VALUETYPE_BOOL, EM_VALUETYPE_BYTE, EM_VALUETYPE_SHORT, EM_VALUETYPE_LONG, EM_VALUETYPE_FLOAT, EM_VALUETYPE_DOUBLE	};
+
+	static const int VALUETYPE_BOOL = 0;
+	static const int VALUETYPE_BYTE = 1;
+	static const int VALUETYPE_SHORT = 2;
+	static const int VALUETYPE_LONG = 3;
+	static const int VALUETYPE_FLOAT = 4;
+	static const int VALUETYPE_DOUBLE = 5;
+
 
 	int m_Id;
 	int m_ProcessModuleId;
@@ -21,8 +27,14 @@ public:
 	int m_IsConfig;
 	int m_IsVisible;
 	int m_ValueType;
-	CString m_strAddressIndex;
+	CString m_strReadAddrIndex;
 	CString m_strAddressType;
 	int m_PlcId;
+	CString m_strUnit;
+	CString m_strWriteAddrIndex;
+
+	CString ConvertValTypeToString();
+	CString ConvertIsConfigToString();
+	CString ConvertIsVisibleToString();
 };
 
