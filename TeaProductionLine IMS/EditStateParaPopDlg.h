@@ -2,6 +2,7 @@
 #include "afxwin.h"
 #include "DataProvider.h"
 #include "StatePara.h"
+#include "ParaCheckUtil.h"
 
 
 // CEditStateParaPopDlg 对话框
@@ -19,6 +20,7 @@ public:
 	int m_nSelectedItem;
 	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
 
+	CParaCheckUtil m_ParaCheckUtil;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
@@ -34,6 +36,5 @@ public:
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
 
-	int LineComboxPaint();
 	int ModuleComboxPaint(CString LineName);
 };

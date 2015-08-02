@@ -136,6 +136,7 @@
     <ClInclude Include="LoginDlg.h" />
     <ClInclude Include="LoginUser.h" />
     <ClInclude Include="MainDlg.h" />
+    <ClInclude Include="ParaCheckUtil.h" />
     <ClInclude Include="PlcClass.h" />
     <ClInclude Include="ProcessModuleClass.h" />
     <ClInclude Include="ProcessModulePara.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="LoginDlg.cpp" />
     <ClCompile Include="LoginUser.cpp" />
     <ClCompile Include="MainDlg.cpp" />
+    <ClCompile Include="ParaCheckUtil.cpp" />
     <ClCompile Include="PlcClass.cpp" />
     <ClCompile Include="ProcessModuleClass.cpp" />
     <ClCompile Include="ProcessModulePara.cpp" />

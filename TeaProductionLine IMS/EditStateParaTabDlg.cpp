@@ -57,7 +57,10 @@ void CEditStateParaTabDlg::OnBnClickedAddItem()
 	m_AddrIndexEdit.GetWindowText(tempStatePara.m_strAddressIndex);
 	m_NoteEdit.GetWindowText(tempStatePara.m_strDescription);
 
-	m_pDataProvider->AddStateParaToDatabase(tempStatePara);
+	if (!m_ParaCheckUtil.StateParaCheck(tempStatePara))
+	{
+		m_pDataProvider->AddStateParaToDatabase(tempStatePara);
+	}
 
 	ListOnPaint();
 

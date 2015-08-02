@@ -23,6 +23,8 @@ CProcessPara::CProcessPara()
 	m_strLastUpdatedDateTime = _T("");
 	m_strUnit = _T("");
 	m_strWriteAddrIndex = _T("");
+	m_fSetValue = -3001;
+
 }
 
 

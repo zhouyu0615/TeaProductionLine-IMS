@@ -4,7 +4,7 @@
 #include "DataProvider.h"
 #include "EditModuleParaPopDlg.h"
 #include "ProcessModulePara.h"
-
+#include "ParaCheckUtil.h"
 
 // CEditModuleParaTabDlg 对话框
 
@@ -20,7 +20,8 @@ public:
 	enum { IDD = IDD_EDITMODULEPARA_TABDLG };
 	int m_nSelectedItem;
 	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
-
+	CEditModuleParaPopDlg m_ModuleParaPopDlg;
+	CParaCheckUtil m_ParaCheckUtil;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
@@ -35,10 +36,7 @@ public:
 	CEdit m_AddrTypeEdit;
 	CEdit m_ReadAddrIndexEdit;
 	CComboBox m_ValueTypeComboBox;
-	CButton m_IsConfigRadio;
-	int m_NotConfigRadio;
-	CButton m_IsVisibleRadio;
-	int m_NotVisibleRadio;
+
 	CEdit m_WriteAddrIndex;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedAddItem();
@@ -54,5 +52,10 @@ public:
 	int PlcComboxPaint();
 
 	int ValTypeComboBoxInit();
-	
+
+	void ShowConfigState(BOOL IsConfig);
+	void ShowVisibleState(BOOL IsVisible);
+
+	BOOL GetConfigState();
+	BOOL GetVisibleState();
 };

@@ -47,21 +47,23 @@ END_MESSAGE_MAP()
 
 void CEditErrorParaPopDlg::OnBnClickedOk()
 {
-	// TODO:  在此添加控件通知处理程序代码
-	m_LineComboBox.GetWindowText(m_pDataProvider->m_vectFaultPara[m_nSelectedItem].m_strProductionLineName);
+	CFaultPara tempFautPara = m_pDataProvider->m_vectFaultPara[m_nSelectedItem];
+	m_LineComboBox.GetWindowText(tempFautPara.m_strProductionLineName);
 
-	m_ModuleComboBox.GetWindowText(m_pDataProvider->m_vectFaultPara[m_nSelectedItem].m_strProcessName);
+	m_ModuleComboBox.GetWindowText(tempFautPara.m_strProcessName);
 
-	m_DeviceComboBox.GetWindowText(m_pDataProvider->m_vectFaultPara[m_nSelectedItem].m_strDeviceName);
-	m_PlcComboBox.GetWindowText(m_pDataProvider->m_vectFaultPara[m_nSelectedItem].m_strPlcName);
+	m_DeviceComboBox.GetWindowText(tempFautPara.m_strDeviceName);
+	m_PlcComboBox.GetWindowText(tempFautPara.m_strPlcName);
 
-	m_NameEdit.GetWindowText(m_pDataProvider->m_vectFaultPara[m_nSelectedItem].m_strParaName);
+	m_NameEdit.GetWindowText(tempFautPara.m_strParaName);
 
-	m_NoteEdit.GetWindowText(m_pDataProvider->m_vectFaultPara[m_nSelectedItem].m_strDescription);
+	m_NoteEdit.GetWindowText(tempFautPara.m_strDescription);
 
-	m_pDataProvider->UpdateTableItem(CDataProvider::tbFaultPara, m_pDataProvider->m_vectFaultPara[m_nSelectedItem].m_Id);
-
-
+	if (!m_ParaCheckUtil.FaultParaCheck(tempFautPara, m_nSelectedItem))
+	{
+		m_pDataProvider->m_vectFaultPara[m_nSelectedItem] = tempFautPara;
+		m_pDataProvider->UpdateTableItem(CDataProvider::tbFaultPara, m_pDataProvider->m_vectFaultPara[m_nSelectedItem].m_Id);
+	}
 	CDialog::OnOK();
 }
 

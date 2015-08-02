@@ -3,6 +3,7 @@
 #include "afxwin.h"
 #include "DataProvider.h"
 #include "EditStateParaPopDlg.h"
+#include "ParaCheckUtil.h"
 
 
 // CEditStateParaTabDlg 对话框
@@ -21,6 +22,7 @@ public:
 	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
 	CEditStateParaPopDlg m_StateParaPopDlg;
 
+	CParaCheckUtil m_ParaCheckUtil;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 

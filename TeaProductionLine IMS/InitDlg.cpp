@@ -703,8 +703,6 @@ void CInitDlg::MyOnPaint()
 		m_LineComboBox.ShowWindow(SW_SHOW);
 		m_ModuleComboBox.ShowWindow(SW_SHOW);
 
-
-
 		if (m_LineComboBox.GetCount() > 0)
 		{
 			if (m_ModuleComboBox.GetCount() > 0)    //如果COMBO2已有内容，先清空//
@@ -862,7 +860,7 @@ void CInitDlg::OnNMRClickLiInitdlg(NMHDR *pNMHDR, LRESULT *pResult)
 	switch (nItem1)
 	{
 	case ID_AA_MODIFY:  //右键菜单：修改//
-		ModifyListItem();
+		ModifyListItem(); 
 		break;
 	case ID_AA_DELETE:
 		DeleteListItem(m_nSelectedItem);
@@ -1102,6 +1100,7 @@ int CInitDlg::DeleteListItem(int nItem)
 			m_pDataProvider->DeleteDbTable(CDataProvider::tbStatePara);
 			m_pDataProvider->DeleteDbTable(CDataProvider::tbDevicePara);
 			m_pDataProvider->DeleteDbTable(CDataProvider::tbFaultPara);
+			m_pDataProvider->DeleteDbTable(CDataProvider::tbFormula);
 
 		}
 		break;
@@ -1118,6 +1117,7 @@ int CInitDlg::DeleteListItem(int nItem)
 			m_pDataProvider->DeleteModule(tempProLineName);
 			m_pDataProvider->DeleteDevice(tempProLineName);
 			m_pDataProvider->DeleteVideo(tempProLineName);
+			
 
 			//删除该容器中的数据
 			pProlineIter = m_pDataProvider->m_vectProductionLine.begin();
@@ -1127,7 +1127,6 @@ int CInitDlg::DeleteListItem(int nItem)
 		break;
 
 	case MODULE_EDIT_TAG:
-
 		nResult = MessageBox(_T("该操作将删除该工艺模块下所有相关设备等数据，是否继续当前操作？"), _T("警告"), MB_ICONEXCLAMATION | MB_YESNO);//警告//
 		if (nResult == IDYES)
 		{

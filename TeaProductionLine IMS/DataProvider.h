@@ -30,7 +30,7 @@ private:
 
 	static CDataProvider *Instance;
 	
-	
+	int ExecutionSQL(CString strSql);
 
 public:
 
@@ -76,6 +76,7 @@ public:
 	std::vector<CFaultPara>::iterator pFaultParaIter;
 	std::vector<CDevicePara>::iterator pDeviceParaIter;
 
+	std::vector<CFormulaClass>::iterator pFormulaIter;
 
 
 	void  InitDataProvider();
@@ -120,8 +121,9 @@ public:
 	int DeleteDbTable(enumDBTABLE dbTable);
 
     int DeleteDbTableItem(enumDBTABLE dbTable, int Id);
-
-
+	int DeleteFormulaRelatedToLine(int ProductionLineID);
+	
+	int DeleteFormula(int FormulaId);
 	
 
 
@@ -129,7 +131,7 @@ public:
 	int DeleteDevice(CString ProductionLineName, CString ModuleName=_T(""));
 	int DeletePlc(CString ProductionLineName);
 	int DeleteVideo(CString ProductionLineName, CString ModuleName=_T(""));
-
+	int DeletePara(CString ProductionLineName, CString ModuleName = _T(""), CString DeviceName = _T(""));
 
 	
 	//根据提供的生产线名，返回找到生产线的ID,查找失败则返回0

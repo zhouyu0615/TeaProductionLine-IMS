@@ -73,6 +73,28 @@ void CDataProvider::InitDataProvider()
 
 
 
+int CDataProvider::ExecutionSQL(CString strSql)
+{
+	CtbUser tbUser;
+	try{
+		if (tbUser.Open(CRecordset::dynaset)){
+			tbUser.m_pDatabase->ExecuteSQL(strSql);
+		}
+		else{
+			AfxMessageBox(_T("打开数据库失败！"));
+			tbUser.Close();
+			return 1;
+		}
+	}
+	catch (CDBException *e){
+		e->ReportError();
+	}
+	tbUser.Close();
+
+	return 0;
+}
+
+
 int CDataProvider::FindProLineId(CString ProducitonLineName)
 {
 	int ProLineId;
@@ -625,7 +647,6 @@ void CDataProvider::AddDeviceParaToDatabase(CDevicePara tempDevicePara)
 		tbDevicePara.Update();
 
 	}
-
 	tbDevicePara.Close();
 }
 
@@ -833,12 +854,12 @@ void CDataProvider::AddFormulaToDatabase(CFormulaClass tempFormula)
 		
 	}
 	else{
-		tempFormula.m_Id = m_vectStatePara[length - 1].m_Id + 1;		
+		tempFormula.m_Id = m_vectFormula[length - 1].m_Id + 1;		
 	}
 
 	tempFormula.m_FormulaId = FindFormulaId(tempFormula.m_strFormulaName);
-	tempFormula.m_ProductionLineId = FindProLineId(tempFormula.m_strProductionLineName);
-	tempFormula.m_strProcessParaName = FindProcessParaName(tempFormula.m_ProcessParaId);
+	//tempFormula.m_ProductionLineId = FindProLineId(tempFormula.m_strProductionLineName);
+	//tempFormula.m_strProcessParaName = FindProcessParaName(tempFormula.m_ProcessParaId);
 
 	m_vectFormula.push_back(tempFormula);
 	if (tbFormula.CanUpdate()){
@@ -1547,21 +1568,8 @@ int CDataProvider::DeleteDbTable(enumDBTABLE dbTable)
 		break;
 	}
 
-	CtbUser tbUser;
-	try{
-		if (tbUser.Open(CRecordset::dynaset)){
-			tbUser.m_pDatabase->ExecuteSQL(strsql);
-		}
-		else{
-			AfxMessageBox(_T("打开数据库失败！"));
-			tbUser.Close();
-			return 1;
-		}
-	}
-	catch (CDBException *e){
-		e->ReportError();
-	}
-	tbUser.Close();
+	ExecutionSQL(strsql);
+
 	return 0;
 }
 
@@ -1614,21 +1622,7 @@ int CDataProvider::DeleteDbTable(enumDBTABLE dbTable)
 		break;
 	}
 
-	CtbUser tbUser;
-	try{
-		if (tbUser.Open(CRecordset::dynaset)){
-			tbUser.m_pDatabase->ExecuteSQL(strsql);
-		}
-		else{
-			AfxMessageBox(_T("打开数据库失败！"));
-			tbUser.Close();
-			return 1;
-		}
-	}
-	catch (CDBException *e){
-		e->ReportError();
-	}
-	tbUser.Close();
+	ExecutionSQL(strsql);
 	return 0;
 }
 
@@ -1955,27 +1949,9 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 		break;
 	}
 
-	CtbUser tbUser;
-	try{
-		if (tbUser.Open(CRecordset::dynaset)){
-			tbUser.m_pDatabase->ExecuteSQL(strsql);
-		}
-		else{
-			AfxMessageBox(_T("打开数据库失败！"));
-			tbUser.Close();
-			return 1;
-		}
-	}
-	catch (CDBException *e){
-		e->ReportError();
-	}
-	tbUser.Close();
+	ExecutionSQL(strsql);
 	return 0;
 }
-
-
-
-
 
 
 
@@ -1986,9 +1962,7 @@ int CDataProvider::DeleteModule(CString ProductionLineName){
 	{
 		if (pModuleIter->m_strProductionLineName == ProductionLineName)
 		{
-			//删除数据库里面的数据
-			DeleteDbTableItem(CDataProvider::tbProcessModule, pModuleIter->m_Id);
-			//删除内存容器里面的数据
+			//删除内存容器里面的数据//
 			pModuleIter = m_vectProcessModule.erase(pModuleIter);
 		}
 		else
@@ -1997,6 +1971,12 @@ int CDataProvider::DeleteModule(CString ProductionLineName){
 		}
 
 	}
+
+	CString strsql;
+	strsql.Format(_T("DELETE FROM tbProcessModule WHERE ProductionLineName='%s' "), ProductionLineName);
+
+	ExecutionSQL(strsql);
+
 	return 0;
 }
 
@@ -2010,9 +1990,7 @@ int CDataProvider::DeleteDevice(CString ProductionLineName, CString ModuleName){
 		if (pDeviceIter->m_strProductionLineName == ProductionLineName
 			&& (ModuleName.IsEmpty() || pDeviceIter->m_strProcessModuleName == ModuleName))
 		{
-			//删除数据库里面的数据
-			DeleteDbTableItem(CDataProvider::tbDevice, pDeviceIter->m_Id);
-			//删除内存容器里面的数据
+			//删除内存容器里面的数据//
 			pDeviceIter = m_vectDevice.erase(pDeviceIter);
 		}
 		else{
@@ -2020,8 +1998,13 @@ int CDataProvider::DeleteDevice(CString ProductionLineName, CString ModuleName){
 		}
 
 	}
-	return 0;
 
+	//删除数据库里面的数据//
+	CString strsql;
+	strsql.Format(_T("DELETE FROM tbDevice WHERE ProductionLineName='%s'AND ProcessModuleName='%s'"), ProductionLineName, ModuleName);
+
+	ExecutionSQL(strsql);
+	return 0;
 }
 
 
@@ -2032,9 +2015,7 @@ int CDataProvider::DeletePlc(CString ProductionLineName){
 		)
 	{
 		if (pPlcIter->m_strProductionLineName == ProductionLineName)
-		{
-			//删除数据库里面的数据
-			DeleteDbTableItem(CDataProvider::tbPLc, pPlcIter->m_Id);
+		{		
 			//删除内存容器里面的数据
 			pPlcIter = m_vectPlc.erase(pPlcIter);
 		}
@@ -2044,6 +2025,12 @@ int CDataProvider::DeletePlc(CString ProductionLineName){
 		}
 
 	}
+	//删除数据库里面的数据//
+	CString strsql;
+	strsql.Format(_T("DELETE FROM tbPLc WHERE ProductionLineName='%s' "),ProductionLineName);
+
+	ExecutionSQL(strsql);
+
 	return 0;
 }
 
@@ -2057,9 +2044,7 @@ int CDataProvider::DeleteVideo(CString ProductionLineName, CString ModuleName)
 		if (pVideoIter->m_strProductionLineName == ProductionLineName
 			&& (ModuleName.IsEmpty() || pVideoIter->m_strProcessModuleName == ModuleName))
 		{
-			//删除数据库里面的数据
-			DeleteDbTableItem(CDataProvider::tbVideo, pVideoIter->m_Id);
-			//删除内存容器里面的数据
+			//删除内存容器里面的数据//
 			pVideoIter = m_vectVideo.erase(pVideoIter);
 		}
 		else
@@ -2067,14 +2052,63 @@ int CDataProvider::DeleteVideo(CString ProductionLineName, CString ModuleName)
 			pVideoIter++;
 		}
 	}
+
+	//删除数据库里面的数据
+	CString strsql;
+	strsql.Format(_T("DELETE FROM tbVideo WHERE ProductionLineName='%s' AND  ProcessModuleName='%s'"), ProductionLineName, ModuleName);
+
+	ExecutionSQL(strsql);
+
+	return 0;
+}
+//根据提供的生产线的ID参数，删除整条生产线有关的配方
+int CDataProvider::DeleteFormulaRelatedToLine(int ProductionLineID )
+{
+	//删除容器里面的数据
+	for (pFormulaIter = m_vectFormula.begin(); pFormulaIter != m_vectFormula.end();)
+	{
+		if (ProductionLineID == pFormulaIter->m_ProductionLineId)
+		{
+			pFormulaIter=m_vectFormula.erase(pFormulaIter);
+		}
+		else
+		{
+			++pFormulaIter;
+		}
+	}
+	//删除数据库里面的数据//
+	CString strsql;
+	strsql.Format(_T("DELETE FROM tbFormula WHERE ProductionLineId='%d'"), ProductionLineID);
+	ExecutionSQL(strsql);
+
+	return 0;
+}
+
+//根据提供的配方的FormulaId参数，删除整个配方//
+int CDataProvider::DeleteFormula(int FormulaId)
+{	
+	for (pFormulaIter = m_vectFormula.begin(); pFormulaIter != m_vectFormula.end();)
+	{
+		if (FormulaId == pFormulaIter->m_FormulaId)
+		{
+			pFormulaIter=m_vectFormula.erase(pFormulaIter);
+		}
+		else
+		{
+			++pFormulaIter;
+		}
+	}
+
+	CString strsql;
+	strsql.Format(_T("DELETE FROM tbFormula WHERE FormulaId='%d'"), FormulaId);
+
+	ExecutionSQL(strsql);
 	return 0;
 }
 
 
 
-
-
-/*  根据传入的参数 ProductionLineName ModuleName，
+/*  根据传入的参数 	ExecutionSQL(strsql); ModuleName，
    从m_vectDevice容器中找出相关的Device
    存储到成员变量 m_vTempDevice中
 
@@ -2119,6 +2153,8 @@ int CDataProvider::SearchVideo(CString ProductionLineName, CString ModuleName)
 */
 int CDataProvider::UpdateRelatedToLine(int LineId, CString modifyLineName)
 {
+	CString strsql;
+
 	for (int i = 0; i < m_vectProcessModule.size();i++)
 	{
 		if (m_vectProcessModule[i].m_ProcessLineId == LineId)
@@ -2190,6 +2226,17 @@ int CDataProvider::UpdateRelatedToLine(int LineId, CString modifyLineName)
 			UpdateTableItem(tbDevicePara, m_vectDevicePara[i].m_Id);
 		}
 	}
+
+	//修改配方//
+	for (int i = 0; i < m_vectFormula.size();i++)
+	{
+		if (m_vectFormula[i].m_ProductionLineId==LineId)
+		{
+			m_vectDevicePara[i].m_strProductionLineName = modifyLineName;
+		}
+	}
+	strsql.Format(_T("UPDATE tbFormula SET LastUpdatedDateTime=getdate() ProductionLineName='%s' WHERE ProductionLineId ='%d'"), modifyLineName, LineId);
+	ExecutionSQL(strsql);
 
 	return 0;
 }

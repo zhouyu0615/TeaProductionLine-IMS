@@ -47,21 +47,25 @@ END_MESSAGE_MAP()
 
 void CEditDeviceParaPopDlg::OnBnClickedOk()
 {
+	CDevicePara tempDevicePara;
+	tempDevicePara = m_pDataProvider->m_vectDevicePara[m_nSelectedItem];
 
-	m_LineComboBox.GetWindowText(m_pDataProvider->m_vectDevicePara[m_nSelectedItem].m_strProductionLineName);
+	m_LineComboBox.GetWindowText(tempDevicePara.m_strProductionLineName);
+	m_ModuleComboBox.GetWindowText(tempDevicePara.m_strProcessModuleName);
 
-	m_ModuleComboBox.GetWindowText(m_pDataProvider->m_vectDevicePara[m_nSelectedItem].m_strProcessModuleName);
+	m_DeviceComboBox.GetWindowText(tempDevicePara.m_strDeviceName);
+	m_PlcComboBox.GetWindowText(tempDevicePara.m_strPlcName);
 
-	m_DeviceComboBox.GetWindowText(m_pDataProvider->m_vectDevicePara[m_nSelectedItem].m_strDeviceName);
-	m_PlcComboBox.GetWindowText(m_pDataProvider->m_vectDevicePara[m_nSelectedItem].m_strPlcName);
+	m_NameEdit.GetWindowText(tempDevicePara.m_strParaName);
+	m_ControlAddrEdit.GetWindowText(tempDevicePara.m_strControlAddrIndex);
+	m_StateAddrEdit.GetWindowText(tempDevicePara.m_strStateAddrIndex);
+	m_DescriptionEdit.GetWindowText(tempDevicePara.m_strDescription);
 
-	m_NameEdit.GetWindowText(m_pDataProvider->m_vectDevicePara[m_nSelectedItem].m_strParaName);
-	m_ControlAddrEdit.GetWindowText(m_pDataProvider->m_vectDevicePara[m_nSelectedItem].m_strControlAddrIndex);
-	m_StateAddrEdit.GetWindowText(m_pDataProvider->m_vectDevicePara[m_nSelectedItem].m_strStateAddrIndex);
-	m_DescriptionEdit.GetWindowText(m_pDataProvider->m_vectDevicePara[m_nSelectedItem].m_strDescription);
-
-	m_pDataProvider->UpdateTableItem(CDataProvider::tbDevicePara, m_pDataProvider->m_vectDevicePara[m_nSelectedItem].m_Id);
-
+	if (!m_ParaCheckUtil.DeviceParaCheck(tempDevicePara, m_nSelectedItem))
+	{
+		m_pDataProvider->m_vectDevicePara[m_nSelectedItem] = tempDevicePara;
+		m_pDataProvider->UpdateTableItem(CDataProvider::tbDevicePara, m_pDataProvider->m_vectDevicePara[m_nSelectedItem].m_Id);
+	}
 	CDialog::OnOK();
 }
 
@@ -185,3 +189,5 @@ int CEditDeviceParaPopDlg::DeviceComboxPaint(CString LineName, CString ModuleNam
 	m_DeviceComboBox.SetCurSel(0);
 	return 0;
 }
+
+

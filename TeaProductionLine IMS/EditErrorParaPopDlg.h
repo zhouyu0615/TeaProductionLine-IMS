@@ -2,6 +2,7 @@
 #include "afxwin.h"
 #include "FaultPara.h"
 #include "DataProvider.h"
+#include "ParaCheckUtil.h"
 
 
 // CEditErrorParaPopDlg 对话框
@@ -19,6 +20,7 @@ public:
 	int m_nSelectedItem;
 	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
 
+	CParaCheckUtil m_ParaCheckUtil;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 

@@ -63,9 +63,13 @@ void CEditErrorParaTabDlg::OnBnClickedAddItem()
 
 	m_DescriptionEdit.GetWindowText(tempFaultPara.m_strDescription);
 
-	m_pDataProvider->AddFaultParaToDatabase(tempFaultPara);
+	if (!m_ParaCheckUtil.FaultParaCheck(tempFaultPara))
+	{
+		m_pDataProvider->AddFaultParaToDatabase(tempFaultPara);
+		ListOnPaint();
+	}
 
-	ListOnPaint();
+
 }
 
 
@@ -292,3 +296,5 @@ void CEditErrorParaTabDlg::OnNMRClickLi1EditerrorparaTabdlg(NMHDR *pNMHDR, LRESU
 	ListOnPaint();
 
 }
+
+

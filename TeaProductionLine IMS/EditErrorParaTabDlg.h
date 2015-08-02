@@ -4,6 +4,7 @@
 #include "DataProvider.h"
 #include "FaultPara.h"
 #include "EditErrorParaPopDlg.h"
+#include "ParaCheckUtil.h"
 
 
 // CEditErrorParaTabDlg 对话框
@@ -22,6 +23,8 @@ public:
 	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
 
 	CEditErrorParaPopDlg m_FaultParaPopDlg;
+
+	CParaCheckUtil m_ParaCheckUtil;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
@@ -50,4 +53,6 @@ public:
 	int DeviceComboxPaint(CString LineName, CString ModuleName);
 	int PlcComboxPaint();
 	afx_msg void OnNMRClickLi1EditerrorparaTabdlg(NMHDR *pNMHDR, LRESULT *pResult);
+
+
 };

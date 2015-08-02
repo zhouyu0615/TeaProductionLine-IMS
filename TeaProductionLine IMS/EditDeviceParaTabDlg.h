@@ -4,6 +4,7 @@
 #include "DataProvider.h"
 #include "DevicePara.h"
 #include "EditDeviceParaPopDlg.h"
+#include "ParaCheckUtil.h"
 
 
 // CEditDeviceParaTabDlg 对话框
@@ -19,6 +20,7 @@ public:
 // 对话框数据
 	enum { IDD = IDD_EDITDEVICEPARA_TABDLG };
 
+	
 
 	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
 protected:
@@ -26,6 +28,8 @@ protected:
 
 	int m_nSelectedItem;
 	CEditDeviceParaPopDlg m_DeviceParaDlg;
+
+	CParaCheckUtil m_ParaCheckUtil;
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -51,7 +55,6 @@ public:
 	int PlcComboxPaint();
 
 
-	int DeviceParaCheck(CDevicePara &tempDevicePara);
 
 	afx_msg void OnCbnSelchangeLine();
 	afx_msg void OnCbnSelchangeModule();

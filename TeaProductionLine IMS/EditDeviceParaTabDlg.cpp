@@ -63,7 +63,7 @@ void CEditDeviceParaTabDlg::OnBnClickedAddItem()
 	m_StateAddrEdit.GetWindowText(tempDevicePara.m_strStateAddrIndex);
 	m_DescriptionEdit.GetWindowText(tempDevicePara.m_strDescription);
 
-	if (DeviceParaCheck(tempDevicePara) == 0) //参数名的检查通过
+	if (m_ParaCheckUtil.DeviceParaCheck(tempDevicePara) == 0) //参数名的检查通过
 	{
 		m_pDataProvider->AddDeviceParaToDatabase(tempDevicePara);
 	}
@@ -294,22 +294,3 @@ void CEditDeviceParaTabDlg::OnNMRClickLi1EditdeviceparaTabdlg(NMHDR *pNMHDR, LRE
 }
 
 
-//检查通过返回0.不通过返回1
-int CEditDeviceParaTabDlg::DeviceParaCheck(CDevicePara &tempDevicePara)
-{
-	if (tempDevicePara.m_strParaName.IsEmpty())
-	{
-		AfxMessageBox(_T("参数名为空,不能添加"));
-		return 1;
-	}
-	for (int i = 0; i < m_pDataProvider->m_vectDevicePara.size(); i++)
-	{
-		if ((tempDevicePara.m_strProductionLineName == m_pDataProvider->m_vectDevicePara[i].m_strProductionLineName) && (tempDevicePara.m_strProcessModuleName == m_pDataProvider->m_vectDevicePara[i].m_strProcessModuleName) && (tempDevicePara.m_strDeviceName == m_pDataProvider->m_vectDevicePara[i].m_strDeviceName))
-		{
-			AfxMessageBox(_T("同一生产线下同一模块的同一设备下已经存在同名参数，请改变参数名字"));
-			return 1;
-		}
-
-	}
-	return 0;
-}

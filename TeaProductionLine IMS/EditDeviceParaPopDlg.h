@@ -2,6 +2,7 @@
 #include "afxwin.h"
 #include "DataProvider.h"
 #include "DevicePara.h"
+#include "ParaCheckUtil.h"
 
 
 // CEditDeviceParaPopDlg 对话框
@@ -18,6 +19,8 @@ public:
 	enum { IDD = IDD_EDITDEVICEPARA_POPDLG };
 	int m_nSelectedItem;
 	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
+	
+	CParaCheckUtil m_ParaCheckUtil;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
@@ -40,4 +43,5 @@ public:
 	int DeviceComboxPaint(CString LineName, CString ModuleName);
 	afx_msg void OnCbnSelchangeLine();
 	afx_msg void OnCbnSelchangeModule();
+
 };

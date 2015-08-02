@@ -33,6 +33,8 @@ public:
 	CString m_strUnit;
 	CString m_strWriteAddrIndex;
 
+	float m_fSetValue;
+
 	CString ConvertValTypeToString();
 	CString ConvertIsConfigToString();
 	CString ConvertIsVisibleToString();

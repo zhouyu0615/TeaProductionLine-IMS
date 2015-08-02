@@ -180,6 +180,9 @@
     <ClInclude Include="tbFormula.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ParaCheckUtil.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TeaProductionLine IMS.cpp">
@@ -336,6 +339,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="tbFormula.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ParaCheckUtil.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -53,16 +53,21 @@ void CEditStateParaPopDlg::OnCbnSelchangeLine()
 
 void CEditStateParaPopDlg::OnBnClickedOk()
 {
-	m_LineComboBox.GetWindowText(m_pDataProvider->m_vectStatePara[m_nSelectedItem].m_strProductionLineName);
+	CStatePara tempStatePara = m_pDataProvider->m_vectStatePara[m_nSelectedItem];
+	m_LineComboBox.GetWindowText(tempStatePara.m_strProductionLineName);
 
-	m_ModuleComboBox.GetWindowText(m_pDataProvider->m_vectStatePara[m_nSelectedItem].m_strProcessModuleName);
+	m_ModuleComboBox.GetWindowText(tempStatePara.m_strProcessModuleName);
 
-	m_PlcComboBox.GetWindowText(m_pDataProvider->m_vectStatePara[m_nSelectedItem].m_strPlcName);
+	m_PlcComboBox.GetWindowText(tempStatePara.m_strPlcName);
 
-	m_NameEdit.GetWindowText(m_pDataProvider->m_vectStatePara[m_nSelectedItem].m_strParaName);
-	m_NoteEdit.GetWindowText(m_pDataProvider->m_vectStatePara[m_nSelectedItem].m_strDescription);
+	m_NameEdit.GetWindowText(tempStatePara.m_strParaName);
+	m_NoteEdit.GetWindowText(tempStatePara.m_strDescription);
 
-	m_pDataProvider->UpdateTableItem(CDataProvider::tbStatePara, m_pDataProvider->m_vectStatePara[m_nSelectedItem].m_Id);
+	if (!m_ParaCheckUtil.StateParaCheck(tempStatePara, m_nSelectedItem))
+	{
+		m_pDataProvider->m_vectStatePara[m_nSelectedItem] = tempStatePara;
+		m_pDataProvider->UpdateTableItem(CDataProvider::tbStatePara, m_pDataProvider->m_vectStatePara[m_nSelectedItem].m_Id);
+	}
 
 	CDialog::OnOK();
 }

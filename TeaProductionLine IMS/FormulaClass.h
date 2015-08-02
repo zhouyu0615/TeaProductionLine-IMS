@@ -18,5 +18,6 @@ public:
 	long	m_IsDefaultFormula;
 	long	m_IsCurrentFormula;
 
+
 };
 
