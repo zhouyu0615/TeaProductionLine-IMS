@@ -59,4 +59,5 @@ public:
 	afx_msg void OnCbnSelchangeLine();
 	afx_msg void OnCbnSelchangeModule();
 	afx_msg void OnNMRClickLi1EditdeviceparaTabdlg(NMHDR *pNMHDR, LRESULT *pResult);
+	virtual void OnOK();
 };

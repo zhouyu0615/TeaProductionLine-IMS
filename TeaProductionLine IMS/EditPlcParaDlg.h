@@ -31,4 +31,5 @@ public:
 	CEditModuleParaTabDlg m_EditModuleParaTabDlg;
 	CEditStateParaTabDlg m_EditStateParaTabDlg;
 	afx_msg void OnTcnSelchangeTabEditplcparadlg(NMHDR *pNMHDR, LRESULT *pResult);
+	virtual void OnOK();
 };

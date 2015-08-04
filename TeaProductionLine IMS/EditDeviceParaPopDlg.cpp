@@ -191,3 +191,11 @@ int CEditDeviceParaPopDlg::DeviceComboxPaint(CString LineName, CString ModuleNam
 }
 
 
+
+
+void CEditDeviceParaPopDlg::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+
+	//CDialog::OnOK();
+}

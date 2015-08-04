@@ -136,3 +136,11 @@ int CEditStateParaPopDlg::ModuleComboxPaint(CString LineName)
 	m_ModuleComboBox.SetCurSel(0);
 	return 0;
 }
+
+
+void CEditStateParaPopDlg::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+
+	//CDialog::OnOK();
+}

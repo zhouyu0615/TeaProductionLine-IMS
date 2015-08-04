@@ -59,6 +59,8 @@ public:
 	std::vector<CDevicePara>  m_vectDevicePara;
 
 	std::vector<CFormulaClass> m_vectFormula; //配方表//
+	std::vector<CProcessPara> m_vectTempProModulePara; //临时工艺参数表//
+
 
 
 
@@ -131,9 +133,11 @@ public:
 	int DeleteDevice(CString ProductionLineName, CString ModuleName=_T(""));
 	int DeletePlc(CString ProductionLineName);
 	int DeleteVideo(CString ProductionLineName, CString ModuleName=_T(""));
-	int DeletePara(CString ProductionLineName, CString ModuleName = _T(""), CString DeviceName = _T(""));
+	int DeleteParaRelatedToLine(int ProductionLineId);
+	int DeleteParaRelatedToModule(int ModuleId);
+	int DeleteParaRelatedToDevice(int DeviceId);
+	int DeleteParaRelatedToPlc(int PlcId);
 
-	
 	//根据提供的生产线名，返回找到生产线的ID,查找失败则返回0
 	int FindProLineId(CString ProducitonLineName);
 	//根据提供的生产线名，模块名，返回找到的所属工艺模块的ID,查找失败则返回0
@@ -157,6 +161,7 @@ public:
 	int UpdateRelatedToLine(int LineId, CString modifyLineName);
 	int UpdateRelatedToModule(int ModuleId, CString modifyModuleName);
 	int UpdateRelatedToPlc(int PlcId, CString modifyPlcName);
+	int UpdataRelatedToDevice(int DeviceId, CString modifyDeviceName);
 
 	
 

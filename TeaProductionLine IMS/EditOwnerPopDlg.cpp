@@ -73,3 +73,11 @@ BOOL CEditOwnerPopDlg::OnInitDialog()
 	// 异常:  OCX 属性页应返回 FALS
 	
 }
+
+
+void CEditOwnerPopDlg::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+
+	//CDialog::OnOK();
+}

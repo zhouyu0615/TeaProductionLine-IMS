@@ -298,3 +298,10 @@ void CEditErrorParaTabDlg::OnNMRClickLi1EditerrorparaTabdlg(NMHDR *pNMHDR, LRESU
 }
 
 
+
+
+void CEditErrorParaTabDlg::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类//
+	//CDialog::OnOK();
+}

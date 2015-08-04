@@ -294,3 +294,11 @@ void CEditDeviceParaTabDlg::OnNMRClickLi1EditdeviceparaTabdlg(NMHDR *pNMHDR, LRE
 }
 
 
+
+
+void CEditDeviceParaTabDlg::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+
+	//CDialog::OnOK();
+}

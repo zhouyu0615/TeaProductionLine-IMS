@@ -36,4 +36,5 @@ private:
 	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
 public:
 	virtual BOOL OnInitDialog();
+	virtual void OnOK();
 };

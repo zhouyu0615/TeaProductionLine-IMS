@@ -49,4 +49,5 @@ public:
 	void ShowVisibleState(BOOL IsVisible);
 	BOOL GetConfigState();
 	BOOL GetVisibleState();
+	virtual void OnOK();
 };

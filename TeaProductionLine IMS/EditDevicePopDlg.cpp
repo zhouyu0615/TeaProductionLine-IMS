@@ -79,7 +79,10 @@ void CEditDevicePopDlg::OnBnClickedOk()
 	m_pDataProVider->m_vectDevice[m_nSelectedItem].m_ProductionLineId = m_pDataProVider->FindProLineId(LineName);
 	m_pDataProVider->m_vectDevice[m_nSelectedItem].m_ProcessModuleId = m_pDataProVider->FindProModuleId(LineName, ModuleName);
 
-	m_pDataProVider->UpdateTableItem(CDataProvider::tbDevice, m_pDataProVider->m_vectDevice[m_nSelectedItem].m_Id);
+	int DeviceId = m_pDataProVider->m_vectDevice[m_nSelectedItem].m_Id;
+	m_pDataProVider->UpdateTableItem(CDataProvider::tbDevice, DeviceId);
+	
+	m_pDataProVider->UpdataRelatedToDevice(DeviceId, DeviceName);
 
 	CDialogEx::OnOK();
 }
@@ -124,4 +127,12 @@ BOOL CEditDevicePopDlg::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
+}
+
+
+void CEditDevicePopDlg::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+
+	//CDialogEx::OnOK();
 }

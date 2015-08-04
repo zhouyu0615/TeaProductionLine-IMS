@@ -32,3 +32,11 @@ END_MESSAGE_MAP()
 
 
 // CEditUserPopDlg 消息处理程序
+
+
+void CEditUserPopDlg::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+
+	//CDialog::OnOK();
+}

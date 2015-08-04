@@ -110,3 +110,11 @@ void CEditPlcParaDlg::OnTcnSelchangeTabEditplcparadlg(NMHDR *pNMHDR, LRESULT *pR
 		break;
 	}
 }
+
+
+void CEditPlcParaDlg::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+
+	//CDialog::OnOK();
+}

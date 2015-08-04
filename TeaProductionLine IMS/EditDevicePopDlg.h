@@ -31,4 +31,5 @@ public:
 	afx_msg void OnCbnSelchangeCo1EditdevicePopdlg();
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
+	virtual void OnOK();
 };

@@ -62,8 +62,10 @@ void CEditPlcPopDlg::OnBnClickedOk()
 	m_WriteLengthEdit.GetWindowText(tempStr);
 	m_pDataProvider->m_vectPlc[m_nSelectedItem].m_WriteLength = _ttoi(tempStr);
 
-	m_pDataProvider->UpdateTableItem(CDataProvider::tbPLc, m_pDataProvider->m_vectPlc[m_nSelectedItem].m_Id);
+	int PlcId = m_pDataProvider->m_vectPlc[m_nSelectedItem].m_Id;
+	m_pDataProvider->UpdateTableItem(CDataProvider::tbPLc,PlcId );
 
+	m_pDataProvider->UpdateRelatedToPlc(PlcId, m_pDataProvider->m_vectPlc[m_nSelectedItem].m_strPlcName);
 
 	CDialog::OnOK();
 }
@@ -90,8 +92,14 @@ BOOL CEditPlcPopDlg::OnInitDialog()
 	strtemp.Format(_T("%d"), tempPlc.m_WriteLength);
 	m_WriteLengthEdit.SetWindowText(strtemp);
 
-
-
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
+}
+
+
+void CEditPlcPopDlg::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+
+	//CDialog::OnOK();
 }

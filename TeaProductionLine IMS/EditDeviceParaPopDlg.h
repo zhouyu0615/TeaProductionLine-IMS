@@ -44,4 +44,5 @@ public:
 	afx_msg void OnCbnSelchangeLine();
 	afx_msg void OnCbnSelchangeModule();
 
+	virtual void OnOK();
 };

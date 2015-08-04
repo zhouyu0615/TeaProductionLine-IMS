@@ -209,7 +209,6 @@ void CInitDlg::OnBnClickedAddInitdlg()
 			return;
 		}
 
-
 		if (text1.IsEmpty() || text2.IsEmpty() || text3.IsEmpty())
 		{
 			AfxMessageBox(_T("信息不完善，无法添加！"));
@@ -348,9 +347,10 @@ void CInitDlg::OnBnClickedAddInitdlg()
 	}
 	ClearEditCtrl();
 
-	MyOnPaint();
+	ListOnPaint();
 
 }
+
 
 
 void CInitDlg::OnBnClickedBtGobackInitdlg()
@@ -360,7 +360,7 @@ void CInitDlg::OnBnClickedBtGobackInitdlg()
 }
 
 
-void CInitDlg::MyOnPaint()
+int CInitDlg::LineComboboxOnPaint()
 {
 	//如果已经添加了生产线信息而又没有填写到下拉框，则导入//
 	if (!m_pDataProvider->m_vectProductionLine.empty())  {
@@ -368,11 +368,15 @@ void CInitDlg::MyOnPaint()
 		for (int k = 0; k < m_pDataProvider->m_vectProductionLine.size(); k++)
 		{
 			m_LineComboBox.AddString(m_pDataProvider->m_vectProductionLine[k].m_strLineName);
-			m_LineComboBox.SetCurSel(0);
+			
 		}
 	}
+	m_LineComboBox.SetCurSel(0);
+	return 0;
+}
 
-
+int CInitDlg::ListOnPaint()
+{
 	//设置列表控件风格//
 	CRect rect1;
 	m_list_init.GetWindowRect(&rect1);
@@ -672,11 +676,8 @@ void CInitDlg::MyOnPaint()
 		}
 		break;
 
-
-
 	case VIDEO_EDIT_TAG:
 		//初始化编辑区//
-
 		m_GroupBox.SetWindowText(_T("添加摄像头"));
 		m_StaticText1.SetWindowText(_T("所属生产线："));
 		m_StaticText2.SetWindowText(_T("所属工艺模块："));
@@ -752,6 +753,13 @@ void CInitDlg::MyOnPaint()
 		break;
 	}
 
+	return 0;
+}
+
+void CInitDlg::MyOnPaint()
+{
+	LineComboboxOnPaint();
+	ListOnPaint();
 }
 
 void CInitDlg::OnPaint()
@@ -827,7 +835,6 @@ void CInitDlg::OnCbnSelchangeCoLineInitdlg()
 			m_ModuleComboBox.AddString(m_pDataProvider->m_vectProcessModule[i].m_strProcessModuleName);
 			m_ModuleComboBox.SetCurSel(0);
 		}
-
 
 }
 
@@ -1108,7 +1115,7 @@ int CInitDlg::DeleteListItem(int nItem)
 		nResult = MessageBox(_T("该操作将删除该生产线所有工艺模块，设备，摄像头等设备，是否继续当前操作？"), _T("警告"), MB_ICONEXCLAMATION | MB_YESNO);//警告//
 		if (nResult == IDYES)
 		{
-			//删除数据库中的数据//
+			//删除数据库中的生产线//
 			m_pDataProvider->DeleteDbTableItem(CDataProvider::tbProductionLine,
 				m_pDataProvider->m_vectProductionLine[m_nSelectedItem].m_Id);
 
@@ -1117,6 +1124,9 @@ int CInitDlg::DeleteListItem(int nItem)
 			m_pDataProvider->DeleteModule(tempProLineName);
 			m_pDataProvider->DeleteDevice(tempProLineName);
 			m_pDataProvider->DeleteVideo(tempProLineName);
+
+			//删除相关的设备参数，工艺参数，故障参数//
+			m_pDataProvider->DeleteParaRelatedToLine(m_pDataProvider->m_vectProductionLine[m_nSelectedItem].m_Id); 
 			
 
 			//删除该容器中的数据
@@ -1140,6 +1150,9 @@ int CInitDlg::DeleteListItem(int nItem)
 			m_pDataProvider->DeleteDevice(tempProLineName, tempModuleName);
 			m_pDataProvider->DeleteVideo(tempProLineName, tempModuleName);
 
+			//删除与模块相关的工艺参数，设备参数，故障参数，状态参数//
+			m_pDataProvider->DeleteParaRelatedToModule(m_pDataProvider->m_vectProcessModule[m_nSelectedItem].m_Id);
+
 			//删除该容器中的数据//
 			pModuleIter = m_pDataProvider->m_vectProcessModule.begin();
 			m_pDataProvider->m_vectProcessModule.erase(pModuleIter + m_nSelectedItem);
@@ -1150,6 +1163,8 @@ int CInitDlg::DeleteListItem(int nItem)
 		m_pDataProvider->DeleteDbTableItem(CDataProvider::tbDevice,
 			m_pDataProvider->m_vectDevice[m_nSelectedItem].m_Id);
 
+		m_pDataProvider->DeleteParaRelatedToDevice(m_pDataProvider->m_vectDevice[m_nSelectedItem].m_Id);
+
 		pDeviceIter = m_pDataProvider->m_vectDevice.begin();
 		m_pDataProvider->m_vectDevice.erase(pDeviceIter + m_nSelectedItem);
 
@@ -1158,6 +1173,8 @@ int CInitDlg::DeleteListItem(int nItem)
 	case PLC_EDIT_TAG:
 		m_pDataProvider->DeleteDbTableItem(CDataProvider::tbPLc,
 			m_pDataProvider->m_vectPlc[m_nSelectedItem].m_Id);
+
+		m_pDataProvider->DeleteParaRelatedToPlc(m_pDataProvider->m_vectPlc[m_nSelectedItem].m_Id);
 
 		pPlcIter = m_pDataProvider->m_vectPlc.begin();
 		m_pDataProvider->m_vectPlc.erase(pPlcIter + m_nSelectedItem);
@@ -1183,3 +1200,11 @@ int CInitDlg::DeleteListItem(int nItem)
 
 
 
+
+
+void CInitDlg::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+
+	//CDialog::OnOK();
+}

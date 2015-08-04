@@ -58,4 +58,5 @@ public:
 
 	BOOL GetConfigState();
 	BOOL GetVisibleState();
+	virtual void OnOK();
 };

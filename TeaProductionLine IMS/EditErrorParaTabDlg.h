@@ -55,4 +55,5 @@ public:
 	afx_msg void OnNMRClickLi1EditerrorparaTabdlg(NMHDR *pNMHDR, LRESULT *pResult);
 
 
+	virtual void OnOK();
 };

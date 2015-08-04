@@ -47,4 +47,5 @@ public:
 	int ModuleComboxPaint(CString LineName);
 	int PlcComboxPaint();
 	afx_msg void OnNMRClickList1(NMHDR *pNMHDR, LRESULT *pResult);
+	virtual void OnOK();
 };

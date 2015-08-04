@@ -241,3 +241,11 @@ void CEditStateParaTabDlg::OnNMRClickList1(NMHDR *pNMHDR, LRESULT *pResult)
 
 
 }
+
+
+void CEditStateParaTabDlg::OnOK()
+{
+	// TODO:  在此添加专用代码和/或调用基类
+
+	//CDialog::OnOK();
+}

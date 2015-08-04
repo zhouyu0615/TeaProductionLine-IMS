@@ -278,7 +278,6 @@ void CDataProvider::AddUserToDatabase(CUserClass tempUser)
 
 	m_vectUser.push_back(tempUser);
 
-
 	if (m_tbUserSet.CanUpdate()){
 		m_tbUserSet.AddNew();
 
@@ -343,7 +342,6 @@ void CDataProvider::AddProLineToDatabase(CProductionLineClass tempProLine)
 		tbProductionLine.m_Description = tempProLine.m_strDescription;
 		tbProductionLine.m_SortIndex = tempProLine.m_SortIndex;
 		tbProductionLine.Update();
-
 	}
 
 	tbProductionLine.Close();
@@ -483,7 +481,6 @@ void CDataProvider::AddPlcToDatabase(CPlcClass tempPlc)
 		e->ReportError();
 	}
 	
-
 	int length = m_vectPlc.size();
 	if (length == 0)//设置第一个PLC ID
 	{
@@ -512,7 +509,6 @@ void CDataProvider::AddPlcToDatabase(CPlcClass tempPlc)
 		tbPlc.m_UserId = tempPlc.m_UserId; //唯一用户ID
 		tbPlc.m_PLCName = tempPlc.m_strPlcName;
 		tbPlc.m_strIPAddr = tempPlc.m_strIPAddr;
-
 		tbPlc.m_ReadStartAddr = tempPlc.m_ReadStartAddr;
 		tbPlc.m_ReadLength = tempPlc.m_ReadLength;
 		tbPlc.m_WriteStartAddr = tempPlc.m_WriteStartAddr;
@@ -678,8 +674,8 @@ void CDataProvider::AddFaultParaToDatabase(CFaultPara tempFaultPara)
 
 	tempFaultPara.m_ProductionLineId = FindProLineId(tempFaultPara.m_strProductionLineName);
 	tempFaultPara.m_ProcessModuleId = FindProModuleId(tempFaultPara.m_strProductionLineName, tempFaultPara.m_strProcessName);
-
-
+	tempFaultPara.m_DeviceId = FindDeviceId(tempFaultPara.m_strProductionLineName, tempFaultPara.m_strProcessName, tempFaultPara.m_strDeviceName);
+	tempFaultPara.m_PLCId = FindPlcId(tempFaultPara.m_strPlcName);
 
 	m_vectFaultPara.push_back(tempFaultPara);
 
@@ -738,7 +734,7 @@ void CDataProvider::AddProcessParaToDatabase(CProcessPara tempProcessPara)
 
 	tempProcessPara.m_ProductionLineId = FindProLineId(tempProcessPara.m_strProductionLineName);
 	tempProcessPara.m_ProcessModuleId = FindProModuleId(tempProcessPara.m_strProductionLineName, tempProcessPara.m_strProcessModuleName);
-
+	tempProcessPara.m_PlcId = FindPlcId(tempProcessPara.m_strPlcName);
 
 	m_vectProModulePara.push_back(tempProcessPara);
 
@@ -799,7 +795,7 @@ void CDataProvider::AddStateParaToDatabase(CStatePara tempStatePara)
 
 	tempStatePara.m_ProductionLineId = FindProLineId(tempStatePara.m_strProductionLineName);
 	tempStatePara.m_ProcessModuleId = FindProModuleId(tempStatePara.m_strProductionLineName, tempStatePara.m_strProcessModuleName);
-
+	tempStatePara.m_PlcId = FindPlcId(tempStatePara.m_strPlcName);
 
 
 	m_vectStatePara.push_back(tempStatePara);
@@ -821,7 +817,6 @@ void CDataProvider::AddStateParaToDatabase(CStatePara tempStatePara)
 		tbStatePara.m_ParaValue = tempStatePara.m_ParaValue;
 		tbStatePara.m_ParaName = tempStatePara.m_strParaName;
 		tbStatePara.m_Description = tempStatePara.m_strDescription;
-
 
 		tbStatePara.Update();
 
@@ -875,7 +870,7 @@ void CDataProvider::AddFormulaToDatabase(CFormulaClass tempFormula)
 		tbFormula.m_Note = tempFormula.m_strNote;
 		tbFormula.m_ParaValueUnit = tempFormula.m_strParaValueUnit;
 		tbFormula.m_DefaultValue = tempFormula.m_DefaultValue;
-		tbFormula.m_ProcessParaId = tempFormula.m_FormulaId;
+		tbFormula.m_ProcessParaId = tempFormula.m_ProcessParaId;
 		tbFormula.m_ProcessParaName = tempFormula.m_strProcessParaName;
 		tbFormula.m_IsDefaultFormula = tempFormula.m_IsDefaultFormula;
 		tbFormula.m_IsCurrentFormula = tempFormula.m_IsCurrentFormula;
@@ -958,10 +953,6 @@ void CDataProvider::ReadDeviceParaFromDatabase()
 	}
 
 	tbDevicePara.Close();
-
-
-
-
 }
 
 void CDataProvider::ReadFaultParaFromDatabase()
@@ -986,7 +977,6 @@ void CDataProvider::ReadFaultParaFromDatabase()
 	{
 		return;
 	}
-
 	m_vectFaultPara.clear();
 	CFaultPara tempFaultPara;
 	
@@ -1192,12 +1182,11 @@ void CDataProvider::ReadUserFromDatabase(){
 		return;
 	}
 
-
 	m_vectUser.clear();
 	CUserClass tempUser;
 	tbUser.MoveFirst();
 	while (!tbUser.IsEOF()){
-		//获取类成员变量 唯一的 用户ID
+		//获取类成员变量 唯一的 用户ID//
 		tempUser.m_UserId = tbUser.m_Id;
 		tempUser.m_strUserName = tbUser.m_UserName;
 		tempUser.m_strUserPasswd = tbUser.m_UserPassword;
@@ -1495,7 +1484,7 @@ void CDataProvider::ReadFormulaFormDatabase()
 		tempFormula.m_strNote = tbFormula.m_Note;
 		tempFormula.m_strParaValueUnit = tbFormula.m_ParaValueUnit ;
 		tempFormula.m_DefaultValue = tbFormula.m_DefaultValue;
-		tempFormula.m_FormulaId = tbFormula.m_ProcessParaId;
+		tempFormula.m_ProcessParaId = tbFormula.m_ProcessParaId;
 		tempFormula.m_strProcessParaName = tbFormula.m_ProcessParaName;
 
 		tempFormula.m_IsDefaultFormula = tbFormula.m_IsDefaultFormula;
@@ -1656,7 +1645,6 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 		strsql.Format(_T("UPDATE tbUser SET LastUpdatedDateTime=getdate(), UserName = '%s',UserPassword='%s',UserCode='%s',Note='%s' WHERE Id ='%d'"),
 			m_vectUser[0].m_strUserName, m_vectUser[0].m_strUserPasswd,
 			m_vectUser[0].m_strUserCode, m_vectUser[0].m_strNote, Id);
-
 		break;
 	case CDataProvider::tbProductionLine:
 
@@ -1704,7 +1692,6 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 				tempDevice = m_vectDevice[i];
 				break;
 			}
-
 		}
 		tempDevice.m_ProductionLineId = FindProLineId(tempDevice.m_strProductionLineName);
 		tempDevice.m_ProcessModuleId = FindProModuleId(tempDevice.m_strProductionLineName,tempDevice.m_strProcessModuleName);
@@ -1913,6 +1900,7 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			tempStatePara.m_strAddressIndex,
 			tempStatePara.m_strDescription,
 			Id);
+		break;
 	case tbFormula:
 		for (i = 0; i < m_vectFormula.size(); i++)
 		{
@@ -1922,14 +1910,14 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 				break;
 			}
 		}
-		tempFormula.m_ProductionLineId = FindProLineId(tempStatePara.m_strProductionLineName);
+		tempFormula.m_ProductionLineId = FindProLineId(tempFormula.m_strProductionLineName);
 
 		tempFormula.m_FormulaId = FindFormulaId(tempFormula.m_strFormulaName);
 		tempFormula.m_strProcessParaName = FindProcessParaName(tempFormula.m_ProcessParaId);
 
 		m_vectFormula[i] = tempFormula;
 
-		strsql.Format(_T("UPDATE tbFormula SET LastUpdatedDateTime=getdate(), ProductionLineId='%d',ProductionLineName='%s',FormulaName='%s',FormulaId='%d',ProcessParaId='%d',ProcessParaName='%s',ParaValueUnit='%s',Note='%s',DefaultValue='%d',IsDefaultFormula='%d',IsCurrentFormula='%d'WHERE Id='%d'"),
+		strsql.Format(_T("UPDATE tbFormula SET LastUpdatedDateTime=getdate(), ProductionLineId='%d',ProductionLineName='%s',FormulaName='%s',FormulaId='%d',ProcessParaId='%d',ProcessParaName='%s',ParaValueUnit='%s',Note='%s',DefaultValue='%f',IsDefaultFormula='%d',IsCurrentFormula='%d'WHERE Id='%d'"),
 			tempFormula.m_ProductionLineId,	
 			tempFormula.m_strProductionLineName,
 			tempFormula.m_strFormulaName,
@@ -1942,8 +1930,6 @@ int CDataProvider::UpdateTableItem(enumDBTABLE dbTable, int Id)
 			tempFormula.m_IsDefaultFormula,
 			tempFormula.m_IsCurrentFormula,
 			Id);
-		break;
-
 		break;
 	default:
 		break;
@@ -2061,10 +2047,255 @@ int CDataProvider::DeleteVideo(CString ProductionLineName, CString ModuleName)
 
 	return 0;
 }
+
+
+int CDataProvider::DeleteParaRelatedToLine(int ProductionLineId)
+{
+	//删除相关的设备参数//
+	for (pDeviceParaIter = m_vectDevicePara.begin(); pDeviceParaIter != m_vectDevicePara.end();)
+	{
+		if (pDeviceParaIter->m_ProductionLineId==ProductionLineId)
+		{
+			pDeviceParaIter = m_vectDevicePara.erase(pDeviceParaIter);
+		}
+		else
+		{
+			++pDeviceParaIter;
+		}
+	}
+	CString strsql;
+	strsql.Format(_T("DELETE FROM tbDevicePara WHERE ProductionLineId='%d'"), ProductionLineId);
+	ExecutionSQL(strsql);
+
+	//删除状态参数相关//
+	for (pStateParaIter = m_vectStatePara.begin(); pStateParaIter != m_vectStatePara.end();)
+	{
+		if (pStateParaIter->m_ProductionLineId == ProductionLineId)
+		{
+			pStateParaIter = m_vectStatePara.erase(pStateParaIter);
+		}
+		else
+		{
+			++pStateParaIter;
+		}
+	}
+	strsql.Format(_T("DELETE FROM tbStatePara WHERE ProductionLineId='%d'"), ProductionLineId);
+	ExecutionSQL(strsql);
+
+	//删除相关的工艺参数//
+	for (pProcessParaIter = m_vectProModulePara.begin(); pProcessParaIter != m_vectProModulePara.end();)
+	{
+		if (pProcessParaIter->m_ProductionLineId == ProductionLineId)
+		{
+			pProcessParaIter = m_vectProModulePara.erase(pProcessParaIter);
+		}
+		else
+		{
+			++pProcessParaIter;
+		}
+	}
+	strsql.Format(_T("DELETE FROM tbProcessPara WHERE ProductionLineId='%d'"), ProductionLineId);
+	ExecutionSQL(strsql);
+	
+	//删除相关的故障参数//
+	for (pFaultParaIter = m_vectFaultPara.begin(); pFaultParaIter != m_vectFaultPara.end();)
+	{
+		if (pFaultParaIter->m_ProductionLineId == ProductionLineId)
+		{
+			pFaultParaIter = m_vectFaultPara.erase(pFaultParaIter);
+		}
+		else
+		{
+			++pFaultParaIter;
+		}
+	}
+	strsql.Format(_T("DELETE FROM tbFaultPara WHERE ProductionLineId='%d'"), ProductionLineId);
+	ExecutionSQL(strsql);
+
+
+	return 0;
+}
+
+//根据提供的工艺模块的ID,删除与工艺模块相关的所有参数//
+int CDataProvider::DeleteParaRelatedToModule(int ModuleId)
+{
+	//删除相关的设备参数//
+	for (pDeviceParaIter = m_vectDevicePara.begin(); pDeviceParaIter != m_vectDevicePara.end();)
+	{
+		if (pDeviceParaIter->m_ProcessModuleId == ModuleId)
+		{
+			pDeviceParaIter = m_vectDevicePara.erase(pDeviceParaIter);
+		}
+		else
+		{
+			++pDeviceParaIter;
+		}
+	}
+	CString strsql;
+	strsql.Format(_T("DELETE FROM tbDevicePara WHERE ProcessModuleId='%d'"), ModuleId);
+	ExecutionSQL(strsql);
+
+	//删除状态参数相关//
+	for (pStateParaIter = m_vectStatePara.begin(); pStateParaIter != m_vectStatePara.end();)
+	{
+		if (pStateParaIter->m_ProcessModuleId == ModuleId)
+		{
+			pStateParaIter = m_vectStatePara.erase(pStateParaIter);
+		}
+		else
+		{
+			++pStateParaIter;
+		}
+	}
+	strsql.Format(_T("DELETE FROM tbStatePara WHERE ProcessModuleId='%d'"), ModuleId);
+	ExecutionSQL(strsql);
+
+	//删除相关的工艺参数//
+	for (pProcessParaIter = m_vectProModulePara.begin(); pProcessParaIter != m_vectProModulePara.end();)
+	{
+		if (pProcessParaIter->m_ProcessModuleId == ModuleId)
+		{
+			pProcessParaIter = m_vectProModulePara.erase(pProcessParaIter);
+		}
+		else
+		{
+			++pProcessParaIter;
+		}
+	}
+	strsql.Format(_T("DELETE FROM tbProcessPara WHERE ProcessModuleId='%d'"), ModuleId);
+	ExecutionSQL(strsql);
+
+	//删除相关的故障参数//
+	for (pFaultParaIter = m_vectFaultPara.begin(); pFaultParaIter != m_vectFaultPara.end();)
+	{
+		if (pFaultParaIter->m_ProcessModuleId == ModuleId)
+		{
+			pFaultParaIter = m_vectFaultPara.erase(pFaultParaIter);
+		}
+		else
+		{
+			++pFaultParaIter;
+		}
+	}
+	strsql.Format(_T("DELETE FROM tbFaultPara WHERE ProcessModuleId='%d'"), ModuleId);
+	ExecutionSQL(strsql);
+
+
+	return 0;
+}
+
+
+
+
+//根据提供的设备的ID,删除与设备相关的所有参数//
+int CDataProvider::DeleteParaRelatedToDevice(int DeviceId)
+{
+	//删除相关的设备参数//
+	for (pDeviceParaIter = m_vectDevicePara.begin(); pDeviceParaIter != m_vectDevicePara.end();)
+	{
+		if (pDeviceParaIter->m_DeviceId == DeviceId)
+		{
+			pDeviceParaIter = m_vectDevicePara.erase(pDeviceParaIter);
+		}
+		else
+		{
+			++pDeviceParaIter;
+		}
+	}
+	CString strsql;
+	strsql.Format(_T("DELETE FROM tbDevicePara WHERE DeviceId='%d'"), DeviceId);
+	ExecutionSQL(strsql);
+
+	//删除相关的故障参数//
+	for (pFaultParaIter = m_vectFaultPara.begin(); pFaultParaIter != m_vectFaultPara.end();)
+	{
+		if (pFaultParaIter->m_ProcessModuleId == DeviceId)
+		{
+			pFaultParaIter = m_vectFaultPara.erase(pFaultParaIter);
+		}
+		else
+		{
+			++pFaultParaIter;
+		}
+	}
+	strsql.Format(_T("DELETE FROM tbFaultPara WHERE DeviceId='%d'"), DeviceId);
+	ExecutionSQL(strsql);
+
+	return 0;
+}
+
+
+int CDataProvider::DeleteParaRelatedToPlc(int PlcId)
+{
+	//删除相关的设备参数//
+	for (pDeviceParaIter = m_vectDevicePara.begin(); pDeviceParaIter != m_vectDevicePara.end();)
+	{
+		if (pDeviceParaIter->m_PlcId == PlcId)
+		{
+			pDeviceParaIter = m_vectDevicePara.erase(pDeviceParaIter);
+		}
+		else
+		{
+			++pDeviceParaIter;
+		}
+	}
+	CString strsql;
+	strsql.Format(_T("DELETE FROM tbDevicePara WHERE PLCId='%d'"), PlcId);
+	ExecutionSQL(strsql);
+
+	//删除状态参数相关//
+	for (pStateParaIter = m_vectStatePara.begin(); pStateParaIter != m_vectStatePara.end();)
+	{
+		if (pStateParaIter->m_PlcId == PlcId)
+		{
+			pStateParaIter = m_vectStatePara.erase(pStateParaIter);
+		}
+		else
+		{
+			++pStateParaIter;
+		}
+	}
+	strsql.Format(_T("DELETE FROM tbStatePara WHERE PLCId='%d'"), PlcId);
+	ExecutionSQL(strsql);
+
+	//删除相关的工艺参数//
+	for (pProcessParaIter = m_vectProModulePara.begin(); pProcessParaIter != m_vectProModulePara.end();)
+	{
+		if (pProcessParaIter->m_PlcId == PlcId)
+		{
+			pProcessParaIter = m_vectProModulePara.erase(pProcessParaIter);
+		}
+		else
+		{
+			++pProcessParaIter;
+		}
+	}
+	strsql.Format(_T("DELETE FROM tbProcessPara WHERE PLCId='%d'"), PlcId);
+	ExecutionSQL(strsql);
+
+	//删除相关的故障参数//
+	for (pFaultParaIter = m_vectFaultPara.begin(); pFaultParaIter != m_vectFaultPara.end();)
+	{
+		if (pFaultParaIter->m_PLCId == PlcId)
+		{
+			pFaultParaIter = m_vectFaultPara.erase(pFaultParaIter);
+		}
+		else
+		{
+			++pFaultParaIter;
+		}
+	}
+	strsql.Format(_T("DELETE FROM tbFaultPara WHERE PLCId='%d'"), PlcId);
+	ExecutionSQL(strsql);
+
+	return 0;
+}
+
+
 //根据提供的生产线的ID参数，删除整条生产线有关的配方
 int CDataProvider::DeleteFormulaRelatedToLine(int ProductionLineID )
 {
-	//删除容器里面的数据
+	//删除容器里面的数据//
 	for (pFormulaIter = m_vectFormula.begin(); pFormulaIter != m_vectFormula.end();)
 	{
 		if (ProductionLineID == pFormulaIter->m_ProductionLineId)
@@ -2159,29 +2390,38 @@ int CDataProvider::UpdateRelatedToLine(int LineId, CString modifyLineName)
 	{
 		if (m_vectProcessModule[i].m_ProcessLineId == LineId)
 		{
-			m_vectProcessModule[i].m_strProductionLineName = modifyLineName;
-			//更新数据库
-			UpdateTableItem(CDataProvider::tbProcessModule, m_vectProcessModule[i].m_Id);
+			m_vectProcessModule[i].m_strProductionLineName = modifyLineName;			
 		}
 	}
+	//更新数据库//
+	strsql.Format(_T("UPDATE tbProcessModule SET LastUpdatedDateTime=getdate(), ProductionLineName='%s' WHERE ProductionLineId ='%d'"), modifyLineName, LineId);
+	ExecutionSQL(strsql);
+
 
 	for (int i = 0; i < m_vectDevice.size();i++)
 	{
 		if (m_vectDevice[i].m_ProductionLineId==LineId)
 		{
 			m_vectDevice[i].m_strProductionLineName = modifyLineName;
-			UpdateTableItem(tbDevice, m_vectDevice[i].m_Id);
 		}
 	}
+
+	//更新数据库//
+	strsql.Format(_T("UPDATE tbDevice SET LastUpdatedDateTime=getdate(), ProductionLineName='%s' WHERE ProductionLineId ='%d'"), modifyLineName, LineId);
+	ExecutionSQL(strsql);
+
 	//修改摄像头
 	for (int i = 0; i < m_vectVideo.size();i++)
 	{
 		if (m_vectVideo[i].m_ProductionLineId==LineId)
 		{
 			m_vectVideo[i].m_strProductionLineName = modifyLineName;
-			UpdateTableItem(tbVideo, m_vectVideo[i].m_Id);
 		}
 	}
+	//更新数据库//
+	strsql.Format(_T("UPDATE tbVideo SET LastUpdatedDateTime=getdate(), ProductionLineName='%s' WHERE ProductionLineId ='%d'"), modifyLineName, LineId);
+	ExecutionSQL(strsql);
+
 
 	//修改工艺参数//
 	for (int i = 0; i < m_vectProModulePara.size();i++)
@@ -2190,9 +2430,12 @@ int CDataProvider::UpdateRelatedToLine(int LineId, CString modifyLineName)
 		if (m_vectProModulePara[i].m_ProductionLineId == LineId)
 		{
 			m_vectProModulePara[i].m_strProductionLineName = modifyLineName;
-			UpdateTableItem(tbProcessPara, m_vectProModulePara[i].m_Id);
 		}
 	}
+
+	strsql.Format(_T("UPDATE tbProcessPara SET LastUpdatedDateTime=getdate(), ProductionLineName='%s' WHERE ProductionLineId ='%d'"), modifyLineName, LineId);
+	ExecutionSQL(strsql);
+
 
 	//修改故障参数//
 	for (int i = 0; i < m_vectFaultPara.size(); i++)
@@ -2201,9 +2444,11 @@ int CDataProvider::UpdateRelatedToLine(int LineId, CString modifyLineName)
 		if (m_vectFaultPara[i].m_ProductionLineId == LineId)
 		{
 			m_vectFaultPara[i].m_strProductionLineName = modifyLineName;
-			UpdateTableItem(tbFaultPara, m_vectFaultPara[i].m_Id);
 		}
 	}
+
+	strsql.Format(_T("UPDATE tbFaultPara SET LastUpdatedDateTime=getdate(), ProductionLineName='%s' WHERE ProductionLineId ='%d'"), modifyLineName, LineId);
+	ExecutionSQL(strsql);
 
 	//修改状态参数//
 	for (int i = 0; i < m_vectStatePara.size(); i++)
@@ -2212,9 +2457,12 @@ int CDataProvider::UpdateRelatedToLine(int LineId, CString modifyLineName)
 		if (m_vectStatePara[i].m_ProductionLineId == LineId)
 		{
 			m_vectStatePara[i].m_strProductionLineName = modifyLineName;
-			UpdateTableItem(tbStatePara, m_vectStatePara[i].m_Id);
 		}
 	}
+
+	strsql.Format(_T("UPDATE tbStatePara SET LastUpdatedDateTime=getdate(), ProductionLineName='%s' WHERE ProductionLineId ='%d'"), modifyLineName, LineId);
+	ExecutionSQL(strsql);
+
 
 	//修改设备参数//
 	for (int i = 0; i < m_vectDevicePara.size(); i++)
@@ -2223,9 +2471,12 @@ int CDataProvider::UpdateRelatedToLine(int LineId, CString modifyLineName)
 		if (m_vectDevicePara[i].m_ProductionLineId == LineId)
 		{
 			m_vectDevicePara[i].m_strProductionLineName = modifyLineName;
-			UpdateTableItem(tbDevicePara, m_vectDevicePara[i].m_Id);
 		}
 	}
+
+	strsql.Format(_T("UPDATE tbDevicePara SET LastUpdatedDateTime=getdate(), ProductionLineName='%s' WHERE ProductionLineId ='%d'"), modifyLineName, LineId);
+	ExecutionSQL(strsql);
+	
 
 	//修改配方//
 	for (int i = 0; i < m_vectFormula.size();i++)
@@ -2235,7 +2486,7 @@ int CDataProvider::UpdateRelatedToLine(int LineId, CString modifyLineName)
 			m_vectDevicePara[i].m_strProductionLineName = modifyLineName;
 		}
 	}
-	strsql.Format(_T("UPDATE tbFormula SET LastUpdatedDateTime=getdate() ProductionLineName='%s' WHERE ProductionLineId ='%d'"), modifyLineName, LineId);
+	strsql.Format(_T("UPDATE tbFormula SET LastUpdatedDateTime=getdate(), ProductionLineName='%s' WHERE ProductionLineId ='%d'"), modifyLineName, LineId);
 	ExecutionSQL(strsql);
 
 	return 0;
@@ -2243,17 +2494,21 @@ int CDataProvider::UpdateRelatedToLine(int LineId, CString modifyLineName)
 
 
 int CDataProvider::UpdateRelatedToModule(int ModuleId, CString modifyModuleName)
-{
+{		
+	CString strsql;
 	//修改设备//
 	for (int i = 0; i < m_vectDevice.size(); i++)
 	{
 		if (m_vectDevice[i].m_ProcessModuleId == ModuleId)
 		{
 			m_vectDevice[i].m_strProcessModuleName = modifyModuleName;
-			UpdateTableItem(tbDevice, m_vectDevice[i].m_Id);
 		}
 	}
-	//修改摄像头
+	strsql.Format(_T("UPDATE tbDevice SET LastUpdatedDateTime=getdate(), ProcessModuleName='%s' WHERE ProcessModuleId ='%d'"), modifyModuleName, ModuleId);
+	ExecutionSQL(strsql);
+
+
+	//修改摄像头//
 	for (int i = 0; i < m_vectVideo.size(); i++)
 	{
 		if (m_vectVideo[i].m_ModuleId == ModuleId)
@@ -2263,6 +2518,9 @@ int CDataProvider::UpdateRelatedToModule(int ModuleId, CString modifyModuleName)
 		}
 	}
 
+	strsql.Format(_T("UPDATE tbVideo SET LastUpdatedDateTime=getdate(), ProcessModuleName='%s' WHERE ProcessModuleId ='%d'"), modifyModuleName, ModuleId);
+	ExecutionSQL(strsql);
+
 	//修改工艺参数//
 	for (int i = 0; i < m_vectProModulePara.size(); i++)
 	{
@@ -2270,9 +2528,11 @@ int CDataProvider::UpdateRelatedToModule(int ModuleId, CString modifyModuleName)
 		if (m_vectProModulePara[i].m_ProcessModuleId == ModuleId)
 		{
 			m_vectProModulePara[i].m_strProcessModuleName = modifyModuleName;
-			UpdateTableItem(tbProcessPara, m_vectProModulePara[i].m_Id);
 		}
 	}
+	strsql.Format(_T("UPDATE tbProcessPara SET LastUpdatedDateTime=getdate(), ProcessModuleName='%s' WHERE ProcessModuleId ='%d'"), modifyModuleName, ModuleId);
+	ExecutionSQL(strsql);
+
 
 	//修改故障参数//
 	for (int i = 0; i < m_vectFaultPara.size(); i++)
@@ -2281,9 +2541,10 @@ int CDataProvider::UpdateRelatedToModule(int ModuleId, CString modifyModuleName)
 		if (m_vectFaultPara[i].m_ProcessModuleId == ModuleId)
 		{
 			m_vectFaultPara[i].m_strProcessName = modifyModuleName;
-			UpdateTableItem(tbFaultPara, m_vectFaultPara[i].m_Id);
 		}
 	}
+	strsql.Format(_T("UPDATE tbFaultPara SET LastUpdatedDateTime=getdate(),ProcessModuleName='%s' WHERE ProcessModuleId ='%d'"), modifyModuleName, ModuleId);
+	ExecutionSQL(strsql);
 
 	//修改状态参数//
 	for (int i = 0; i < m_vectStatePara.size(); i++)
@@ -2292,9 +2553,12 @@ int CDataProvider::UpdateRelatedToModule(int ModuleId, CString modifyModuleName)
 		if (m_vectStatePara[i].m_ProcessModuleId == ModuleId)
 		{
 			m_vectStatePara[i].m_strProcessModuleName = modifyModuleName;
-			UpdateTableItem(tbStatePara, m_vectStatePara[i].m_Id);
 		}
 	}
+	
+	strsql.Format(_T("UPDATE tbStatePara SET LastUpdatedDateTime=getdate(), ProcessModuleName='%s' WHERE ProcessModuleId ='%d'"), modifyModuleName, ModuleId);
+	ExecutionSQL(strsql);
+
 	//修改设备参数//
 	for (int i = 0; i < m_vectDevicePara.size(); i++)
 	{
@@ -2302,10 +2566,100 @@ int CDataProvider::UpdateRelatedToModule(int ModuleId, CString modifyModuleName)
 		if (m_vectDevicePara[i].m_ProcessModuleId == ModuleId)
 		{
 			m_vectDevicePara[i].m_strProcessModuleName = modifyModuleName;
-			UpdateTableItem(tbDevicePara, m_vectDevicePara[i].m_Id);
 		}
 	}
+
+	strsql.Format(_T("UPDATE tbDevicePara SET LastUpdatedDateTime=getdate(), ProcessModuleName='%s' WHERE ProcessModuleId ='%d'"), modifyModuleName, ModuleId);
+	ExecutionSQL(strsql);
+
 	return 0;
 }
 
 
+int CDataProvider::UpdataRelatedToDevice(int DeviceId, CString modifyDeviceName)
+{
+	CString strsql;
+	//修改设备参数//
+	for (int i = 0; i < m_vectDevicePara.size(); i++)
+	{
+
+		if (m_vectDevicePara[i].m_DeviceId == DeviceId)
+		{
+			m_vectDevicePara[i].m_strDeviceName = modifyDeviceName;
+		}
+	}
+
+	strsql.Format(_T("UPDATE tbDevicePara SET LastUpdatedDateTime=getdate(), DeviceName='%s' WHERE DeviceId ='%d'"), modifyDeviceName, DeviceId);
+	ExecutionSQL(strsql);
+
+	//修改故障参数//
+	for (int i = 0; i < m_vectFaultPara.size(); i++)
+	{
+
+		if (m_vectFaultPara[i].m_DeviceId == DeviceId)
+		{
+			m_vectFaultPara[i].m_strDeviceName = modifyDeviceName;
+		}
+	}
+	strsql.Format(_T("UPDATE tbFaultPara SET LastUpdatedDateTime=getdate(), DeviceName='%s' WHERE DeviceId ='%d'"), modifyDeviceName, DeviceId);
+	ExecutionSQL(strsql);
+
+	return 0;
+}
+
+int CDataProvider::UpdateRelatedToPlc(int PlcId, CString modifyPlcName)
+{
+	CString strsql;
+	//修改工艺参数//
+	for (int i = 0; i < m_vectProModulePara.size(); i++)
+	{
+
+		if (m_vectProModulePara[i].m_PlcId == PlcId)
+		{
+			m_vectProModulePara[i].m_strPlcName = modifyPlcName;
+		}
+	}
+	strsql.Format(_T("UPDATE tbProcessPara SET LastUpdatedDateTime=getdate(), PlcName='%s' WHERE PLCId ='%d'"), modifyPlcName, PlcId);
+	ExecutionSQL(strsql);
+
+
+	//修改故障参数//
+	for (int i = 0; i < m_vectFaultPara.size(); i++)
+	{
+
+		if (m_vectFaultPara[i].m_PLCId == PlcId)
+		{
+			m_vectFaultPara[i].m_strPlcName = modifyPlcName;
+		}
+	}
+	strsql.Format(_T("UPDATE tbFaultPara SET LastUpdatedDateTime=getdate(), PlcName='%s' WHERE PLCId ='%d'"), modifyPlcName, PlcId);
+	ExecutionSQL(strsql);
+
+	//修改状态参数//
+	for (int i = 0; i < m_vectStatePara.size(); i++)
+	{
+
+		if (m_vectStatePara[i].m_PlcId == PlcId)
+		{
+			m_vectStatePara[i].m_strPlcName = modifyPlcName;
+		}
+	}
+
+	strsql.Format(_T("UPDATE tbStatePara SET LastUpdatedDateTime=getdate(), PlcName='%s' WHERE PLCId ='%d'"), modifyPlcName, PlcId);
+	ExecutionSQL(strsql);
+
+	//修改设备参数//
+	for (int i = 0; i < m_vectDevicePara.size(); i++)
+	{
+
+		if (m_vectDevicePara[i].m_PlcId == PlcId)
+		{
+			m_vectDevicePara[i].m_strPlcName = modifyPlcName;
+		}
+	}
+
+	strsql.Format(_T("UPDATE tbDevicePara SET LastUpdatedDateTime=getdate(), PlcName='%s' WHERE PLCId ='%d'"), modifyPlcName, PlcId);
+	ExecutionSQL(strsql);
+
+	return 0;
+}

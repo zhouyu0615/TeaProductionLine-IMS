@@ -37,4 +37,5 @@ public:
 	virtual BOOL OnInitDialog();
 
 	int ModuleComboxPaint(CString LineName);
+	virtual void OnOK();
 };

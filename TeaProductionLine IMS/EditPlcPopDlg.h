@@ -30,4 +30,5 @@ public:
 	CEdit m_WriteLengthEdit;
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
+	virtual void OnOK();
 };

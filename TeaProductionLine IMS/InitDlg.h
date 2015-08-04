@@ -86,8 +86,12 @@ public:
 	afx_msg void OnCbnSelchangeCoLineInitdlg();
 	afx_msg void OnNMRClickLiInitdlg(NMHDR *pNMHDR, LRESULT *pResult);
 
+	int LineComboboxOnPaint();
+	int ListOnPaint();
+
 	int DeleteListItem(int nItem);
 	int ModifyListItem();
 	int MoveUpItem();
 	int MoveDownItem();
+	virtual void OnOK();
 };

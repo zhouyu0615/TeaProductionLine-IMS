@@ -32,4 +32,5 @@ public:
 private:
 	CDataProvider* m_pDataProvider = CDataProvider::getInstance();
 
+	virtual void OnOK();
 };
